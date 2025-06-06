@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Website {
+  websiteID    Int            @id @unique @default(autoincrement())
+  urlwebsite   String         @unique
+  linksExtract linksExtract[]
+}
+
+model linksExtract {
+  linkID      Int          @id @unique @default(autoincrement())
+  link        String       @unique
+  websiteID   Int
+  website     Website      @relation(fields: [websiteID], references: [websiteID])
+  postCollect postCollect?
+}
+
+model postCollect {
+  postCollectID Int          @id @unique @default(autoincrement())
+  title         String
+  content       String
+  linkExtractID Int          @unique
+  linksExtract  linksExtract @relation(fields: [linkExtractID], references: [linkID])
+  postFinally   postFinally?
+}
+
+model postFinally {
+  postFinallyID Int         @id @unique @default(autoincrement())
+  title         String
+  content       String
+  summary       String
+  keywords      String
+  postCollectID Int         @unique
+  postCollect   postCollect @relation(fields: [postCollectID], references: [postCollectID])
+}
