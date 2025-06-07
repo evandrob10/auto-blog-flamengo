@@ -2,10 +2,11 @@ import Link from "next/link";
 
 export default function Navigation() {
     return (
-        <nav>
-            <ul className='flex items-center justify-center py-2'>
-                <Link href={'/painel/'} className="mr-2">INICIO</Link>
+        <nav className="bg-black">
+            <ul className='mx-auto sm:w-[40%] flex items-center justify-evenly py-2 text-[#FFF]'>
+                <Link href={'/painel/'}>INICIO</Link>
                 <Link href={'/painel/posts'}>POSTS</Link>
+                <Link href={'/painel/posts/imports'}>IMPORTAÇÃO</Link>
             </ul>
         </nav>
     )

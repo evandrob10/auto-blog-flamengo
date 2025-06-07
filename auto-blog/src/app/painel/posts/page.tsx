@@ -1,7 +1,7 @@
 'use client';
+import Image from "next/image";
 import { Post } from "@/api/posts/interface";
 import { generationPosts, posts as ListPost } from "@/api/posts"
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 export default function Posts() {
@@ -31,23 +31,27 @@ export default function Posts() {
 
     return (
         <section className="w-[95%]">
-            <section className="text-center">
+            <section className="flex items-center justify-between relative mb-2 p-4">
+                <button onClick={createPost} className="text-[18px] mb-2 mr-2 border-none bg-blue-600 w-[50px] h-[25px] rounded-full text-[#FFF] cursor-pointer">+</button>
                 <h1 className="py-2">POSTAGENS</h1>
+                <div>
+                    <Image
+                        width={20}
+                        height={20}
+                        src={'/img/engrenagem.png'}
+                        alt="Configuração url"
+                        className="align-middle py-3 cursor-pointer"
+                    />
+                </div>
             </section>
-            <div className="w-[100%] h-[10%] flex justify-center items-center">
-                <button onClick={createPost} className="text-[14px] mb-2 mr-2 border-none bg-blue-600 py-2 px-3 rounded-[.2em] text-[#FFF] cursor-pointer">CRIAR POST</button>
-                <Link href={'/painel/posts/imports'}>
-                    <button className="text-[14px] mb-2 mr-2 border-none bg-blue-600 py-2 px-3 rounded-[.2em] text-[#FFF] cursor-pointer">IMPORTAR POSTS</button>
-                </Link>
-            </div>
             {message &&
                 <p className='text-center mb-5 py-3 rounded-2xl text-[#FFF] w-[80%] mx-auto xl:w-[30%]' style={message.includes('Error') ? { backgroundColor: 'red' } : { backgroundColor: 'green' }}>{message}</p>
             }
             <section className="min-h-[50%] flex justify-center items-center">
                 {listPosts && listPosts.length ?
-                    <div className="self-start">
+                    <div className="self-start flex flex-wrap">
                         {listPosts.map((element) => (
-                            <div key={element.postFinallyID} className="border-1">
+                            <div key={element.postFinallyID} className="border-1 mb-2 sm:max-w-[48%] mx-[1%] p-2" >
                                 <h3 className="font-bold">{element.title}</h3>
                                 <p>{element.summary}</p>
                             </div>

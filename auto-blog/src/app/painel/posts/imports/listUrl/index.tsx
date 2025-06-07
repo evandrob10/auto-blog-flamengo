@@ -3,6 +3,7 @@ import { getAllUrl } from "@/api/urls";
 import { urlType } from "@/api/urls/interface";
 import { useCallback, useEffect, useState } from "react";
 import { listUrlType } from "./interface";
+import Image from "next/image";
 
 export default function ListUrl({ setWebSite }: listUrlType) {
     const [allUrl, setAllUrl] = useState<urlType[]>()
@@ -17,22 +18,34 @@ export default function ListUrl({ setWebSite }: listUrlType) {
     }, [getAllUrls])
 
     return (
-        <section className="w-[95%]">
-            <table className="text-center text-[16px] w-full">
-                <caption className="py-2">LISTA DE URL DE IMPORTAÇÃO</caption>
-                <thead>
+        <section className="w-[95%] flex flex-col items-center">
+            <table className="text-center text-[16px] w-full sm:w-[90%] lg:w-[80%] xl:w-[60%]">
+                <caption>
+                    <h1 className="py-2 mb-3 text-start font-bold">LISTA DE URL:</h1>
+                </caption>
+                <thead className="border-b-2">
                     <tr>
                         <th>ID</th>
                         <th>URL</th>
+                        <th colSpan={2}>AÇÕES</th>
                     </tr>
                 </thead>
                 <tbody className="text-[14px]">
                     {allUrl && allUrl.map((element) => (
-                        <tr key={element.websiteID}>
+                        <tr key={element.websiteID} >
                             <td >{element.websiteID}</td>
                             <td >{element.urlwebsite}</td>
                             <td >
-                                <button className="bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl" onClick={() => setWebSite(element)}>Abrir</button>
+                                <button className="mr-2 text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl" onClick={() => setWebSite(element)}>Abrir</button>
+                            </td>
+                            <td>
+                                <Image
+                                    width={20}
+                                    height={20}
+                                    src={'/img/engrenagem.png'}
+                                    alt="Configuração url"
+                                    className="py-3 cursor-pointer"
+                                />
                             </td>
                         </tr>
                     ))}
