@@ -12,13 +12,13 @@ export class ContentResearcherController {
     private readonly ExtractLinks: ExtractLinks,
   ) {}
 
-  @Patch()
-  updateLinks(@Body() dataWebSite: { websiteID: number; websiteUrl: string }) {
+  @Patch('/update-links')
+  updateLinks(@Body() dataWebSite: { websiteID: number; urlwebsite: string }) {
     return this.ExtractLinks.extractLinksPosts(dataWebSite);
   }
 
-  @Patch()
-  updatePosts(@Body() websiteID: number) {
+  @Patch('/update-posts')
+  updatePosts(@Body('websiteID') websiteID: number) {
     return this.ExtractPosts.extractPosts(websiteID);
   }
 

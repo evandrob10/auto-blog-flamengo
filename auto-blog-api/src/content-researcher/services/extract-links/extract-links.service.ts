@@ -21,36 +21,46 @@ export class ExtractLinks extends ContentResearcherService {
 
   async extractLinksPosts({
     websiteID,
-    websiteUrl,
+    urlwebsite,
   }: {
     websiteID: number;
-    websiteUrl: string;
+    urlwebsite: string;
   }) {
     await this.browserInit();
-    await this.openPage(websiteUrl, {
+    await this.openPage(urlwebsite, {
       type: 'selector',
       value: '.p-url',
     });
-    if (websiteUrl) {
-      const response: LinksPostsDto[] = await this.page.$$eval(
-        '.p-url',
-        (elements) => {
-          return elements.map((el) => ({
-            href: el.getAttribute('href'),
-          }));
-        },
-      );
-      for (const link of response) {
-        if (link.href) {
-          const href = await this.checkLink(link.href);
-          if (!href) await this.createLink(websiteID, link.href);
-          else continue;
-        } else {
-          continue;
+    try {
+      if (urlwebsite) {
+        const response: LinksPostsDto[] = await this.page.$$eval(
+          '.p-url',
+          (elements) => {
+            return elements.map((el) => ({
+              href: el.getAttribute('href'),
+            }));
+          },
+        );
+        for (const link of response) {
+          if (link.href) {
+            const href = await this.checkLink(link.href);
+            if (!href) await this.createLink(websiteID, link.href);
+            else continue;
+          } else {
+            continue;
+          }
         }
       }
+      return {
+        getlink: true,
+      };
+    } catch {
+      return {
+        getlink: false,
+      };
+    } finally {
+      await this.closePage();
     }
-    await this.closePage();
   }
 
   async createLink(websiteID: number, url: string) {

@@ -6,7 +6,6 @@ import { WritersModule } from './writers/writers.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaClientModule } from './prisma-client/prisma-client.module';
 import { WebsiteModule } from './website/website.module';
-import { WebisteController } from './webiste/webiste.controller';
 
 @Module({
   imports: [
@@ -18,7 +17,7 @@ import { WebisteController } from './webiste/webiste.controller';
     }),
     WebsiteModule,
   ],
-  controllers: [AppController, WebisteController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
