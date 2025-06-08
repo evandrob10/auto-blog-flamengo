@@ -1,68 +1,38 @@
 import { Injectable } from '@nestjs/common';
-import { ContentResearcherService } from '../content-researcher.service';
-import { LinksPostsDto, PostsDto } from './dto/posts.dto';
+//DTO'S
+import { PostsDto } from './dto/posts.dto';
+//Services
 import { WritersService } from 'src/writers/writers.service';
+import { ContentResearcherService } from '../content-researcher.service';
 import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
 
 @Injectable()
-export class Colun extends ContentResearcherService {
-  private dataWebSite: { websiteID: number; urlwebsite: string } | null;
-  private readonly url = 'https://colunadofla.com/ultimas-noticias/';
-
+export class ExtractPosts extends ContentResearcherService {
   constructor(prisma: PrismaClientService, WritersService: WritersService) {
     super(prisma, WritersService);
   }
 
-  async onModuleInit() {
-    this.dataWebSite = await this.getWebSite(this.url);
+  //Checar post/link
+  async ckeckPost(linkID: number) {
+    return this.prisma.postCollect.findUnique({
+      where: { linkExtractID: linkID },
+    });
   }
 
-  async updatePosts() {
-    await this.getLinksPosts();
-    return await this.extractPosts();
-  }
-
-  async getLinksPosts() {
-    await this.browserInit();
-    await this.openPage(this.url, { type: 'selector', value: '.p-url' });
-    if (this.dataWebSite) {
-      const response: LinksPostsDto[] = await this.page.$$eval(
-        '.p-url',
-        (elements) => {
-          return elements.map((el) => ({
-            href: el.getAttribute('href'),
-          }));
-        },
-      );
-      for (const link of response) {
-        if (link.href) {
-          const href = await this.checkLink(link.href);
-          if (!href)
-            await this.createLink(this.dataWebSite.websiteID, link.href);
-          else continue;
-        } else {
-          continue;
-        }
-      }
-    }
-    await this.closePage();
-  }
-
-  async extractPosts() {
+  async extractPosts(websiteID: number) {
     const newPosts: {
       postCollectID: number;
       title: string;
       content: string;
       linkExtractID: number;
     }[] = [];
-    if (this.dataWebSite) {
-      console.log('executado');
+    if (websiteID) {
       //Nova page para cada extração:
       await this.browserInit();
       await this.createSectionsPage();
       //Pegar todos os links:
       const linksPosts: { linkID: number; link: string }[] =
-        await this.getAllLinks(this.dataWebSite.websiteID);
+        await this.getAllLinks(websiteID);
       //Carregamento:
       let count: number = 0;
       for (const linkPost of linksPosts) {
@@ -101,5 +71,15 @@ export class Colun extends ContentResearcherService {
 
       return newPosts;
     }
+  }
+
+  async createPost(linkExtractID: number, title: string, content: string) {
+    return await this.prisma.postCollect.create({
+      data: {
+        linkExtractID: linkExtractID,
+        title: title,
+        content: content,
+      },
+    });
   }
 }

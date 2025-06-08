@@ -1,32 +1,29 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 //Service
 import { ContentResearcherService } from './services/content-researcher.service';
-import { Colun } from './services/pages-content-researcher/colun.content.service';
+import { ExtractPosts } from './services/extract-posts/extract-posts.content.service';
+import { ExtractLinks } from './services/extract-links/extract-links.service';
 
 @Controller('content-researcher')
 export class ContentResearcherController {
   constructor(
     private readonly ContentResearcherService: ContentResearcherService,
-    private readonly Colun: Colun,
+    private readonly ExtractPosts: ExtractPosts,
+    private readonly ExtractLinks: ExtractLinks,
   ) {}
 
-  @Get('/all-website')
-  getAllWebSite() {
-    return this.Colun.getAllWebSite();
+  @Patch()
+  updateLinks(@Body() dataWebSite: { websiteID: number; websiteUrl: string }) {
+    return this.ExtractLinks.extractLinksPosts(dataWebSite);
+  }
+
+  @Patch()
+  updatePosts(@Body() websiteID: number) {
+    return this.ExtractPosts.extractPosts(websiteID);
   }
 
   @Get('/all-posts/:websiteID')
   getAllPost(@Param('websiteID') websiteID: string) {
-    return this.Colun.getAllposts(+websiteID);
-  }
-
-  @Post('/update-posts-colun')
-  updatePosts() {
-    return this.Colun.updatePosts();
-  }
-
-  @Post('/add-website')
-  createWebsite(@Body('url') url: string) {
-    return this.ContentResearcherService.createWebSite(url);
+    return this.ContentResearcherService.getAllposts(+websiteID);
   }
 }

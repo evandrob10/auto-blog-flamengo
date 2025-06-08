@@ -5,6 +5,8 @@ import { ContentResearcherModule } from './content-researcher/content-researcher
 import { WritersModule } from './writers/writers.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaClientModule } from './prisma-client/prisma-client.module';
+import { WebsiteModule } from './website/website.module';
+import { WebisteController } from './webiste/webiste.controller';
 
 @Module({
   imports: [
@@ -14,8 +16,9 @@ import { PrismaClientModule } from './prisma-client/prisma-client.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    WebsiteModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, WebisteController],
   providers: [AppService],
 })
 export class AppModule {}
