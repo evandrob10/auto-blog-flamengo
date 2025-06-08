@@ -4,9 +4,11 @@ import { urlType } from "@/api/urls/interface";
 import { useCallback, useEffect, useState } from "react";
 import { listUrlType } from "./interface";
 import Image from "next/image";
+import Config from "./Config";
 
 export default function ListUrl({ setWebSite }: listUrlType) {
     const [allUrl, setAllUrl] = useState<urlType[]>()
+    const [webSiteClick, setWebSiteClick] = useState<number | undefined>()
 
     const getAllUrls = useCallback(async () => {
         const allListUrl: urlType[] = await getAllUrl();
@@ -17,6 +19,7 @@ export default function ListUrl({ setWebSite }: listUrlType) {
         getAllUrls();
     }, [getAllUrls])
 
+    if (webSiteClick) return <Config webSiteClick={webSiteClick}  setWebSiteClick={setWebSiteClick}/>
     return (
         <section className="w-[95%] flex flex-col items-center">
             <table className="text-center text-[16px] w-full sm:w-[90%] lg:w-[80%] xl:w-[60%]">
@@ -36,7 +39,7 @@ export default function ListUrl({ setWebSite }: listUrlType) {
                             <td >{element.websiteID}</td>
                             <td >{element.urlwebsite}</td>
                             <td >
-                                <button className="mr-2 text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl" onClick={() => setWebSite(element)}>Abrir</button>
+                                <button className="mr-2 text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer" onClick={() => setWebSite(element)}>Abrir</button>
                             </td>
                             <td>
                                 <Image
@@ -45,6 +48,7 @@ export default function ListUrl({ setWebSite }: listUrlType) {
                                     src={'/img/engrenagem.png'}
                                     alt="Configuração url"
                                     className="py-3 cursor-pointer"
+                                    onClick={() => setWebSiteClick(element.websiteID)}
                                 />
                             </td>
                         </tr>
