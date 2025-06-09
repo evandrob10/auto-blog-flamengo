@@ -6,10 +6,13 @@ import { urlType } from "@/api/urls/interface"
 import Import from "./import"
 
 export default function Imports() {
+    const [getlink, setGetlink] = useState<boolean | 'error'>(false);
     const [webSite, setWebSite] = useState<urlType | undefined>(undefined)
     if (webSite) {
-        return <Import website={webSite} setWebSite={setWebSite}  />
+        if (getlink) return <Import website={webSite} setWebSite={setWebSite} setGetlink={setGetlink}/>
+        else if (typeof getlink === 'string') return <p className="animate-pulse">Ocorreu um error ao carregar os links!</p>
+        else return <p className="animate-pulse">Carregando links!</p>
     }
-    return <ListUrl setWebSite={setWebSite} />
+    return <ListUrl setWebSite={setWebSite} setGetlink={setGetlink} />
 }
 

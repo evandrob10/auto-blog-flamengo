@@ -8,19 +8,23 @@ import { urlType } from '@/api/urls/interface';
 
 type WebSite = {
     website: urlType
+    setGetlink: React.Dispatch<SetStateAction<boolean | 'error'>>
     setWebSite: React.Dispatch<SetStateAction<urlType | undefined>>
 }
 
-export default function Import({ website, setWebSite }: WebSite) {
+export default function Import({ website, setWebSite, setGetlink }: WebSite) {
     const [message, setMessage] = useState<string>('');
     const [extractData, setExtractData] = useState<boolean>(false);
     const [quantityPosts, setQuantityPosts] = useState<number>(0);
     const [quantityPostCollect, setQuantityPostCollect] = useState<number>(0);
     const [quantityPostsPending, setQuantityPostsPending] = useState<number>(0);
 
+    //Pega todos os postes coletados
     const getAllPosts = useCallback(async () => {
         const AllPosts: PostsType[] = await posts(`${website.websiteID}`);
+        //Zera o display de post padrão
         if (website) setQuantityPostsPending(0);
+        //Conta quantos links estão pendente de importação do post:
         if (AllPosts) {
             setQuantityPosts(AllPosts.length);
             for (const Post of AllPosts) {
@@ -29,6 +33,7 @@ export default function Import({ website, setWebSite }: WebSite) {
         }
     }, [website])
 
+    //Zera o display:
     const zerarQuantity = useCallback(() => {
         setQuantityPosts(0); // Zerar ao recarregar item 
         setQuantityPostsPending(0); // Zerar ao recarregar item 
@@ -50,9 +55,8 @@ export default function Import({ website, setWebSite }: WebSite) {
     async function extract() {
         setExtractData(true);
         setMessage('');
-        const newPosts: newPosts[] = await update();
+        const newPosts: newPosts[] = await update(website.websiteID);
         if (newPosts.length > 0) {
-            console.log(newPosts);
             updatePosts();
             setMessage(`Foram extraido ${newPosts.length} posts com sucesso!`)
         }
@@ -76,7 +80,7 @@ export default function Import({ website, setWebSite }: WebSite) {
                 }
                 <div className="mt-6 flex flex-col justify-center items-center">
                     {quantityPostsPending !== 0 && (extractData ? <p className='animate-ping'>Carregando...</p> : <button onClick={extract} className={`w-[40%] mb-3 border-none bg-blue-600 py-2 px-6 rounded-[.2em] text-[#FFF] cursor-pointer`}>UPDATE</button>)}
-                    <button className='w-[40%] border-none bg-[#F1F1F1] py-2 px-6 rounded-[.2em] cursor-pointer' onClick={() => setWebSite(undefined)}>VOLTAR</button>
+                    <button className={`${extractData && 'hidden'} w-[40%] border-none bg-[#F1F1F1] py-2 px-6 rounded-[.2em] cursor-pointer`} onClick={() => setWebSite(undefined)}>VOLTAR</button>
                 </div>
             </div>
         </div>

@@ -5,8 +5,9 @@ import { useCallback, useEffect, useState } from "react";
 import { listUrlType } from "./interface";
 import Image from "next/image";
 import Config from "./Config";
+import { updateLinks } from "@/api/links";
 
-export default function ListUrl({ setWebSite }: listUrlType) {
+export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
     const [allUrl, setAllUrl] = useState<urlType[]>()
     const [webSiteClick, setWebSiteClick] = useState<number | undefined>()
 
@@ -19,7 +20,14 @@ export default function ListUrl({ setWebSite }: listUrlType) {
         getAllUrls();
     }, [getAllUrls])
 
-    if (webSiteClick) return <Config webSiteClick={webSiteClick}  setWebSiteClick={setWebSiteClick}/>
+    async function openImports(element: urlType) {
+        setWebSite(element);
+        const response: boolean = await updateLinks(element);
+        if (response) setGetlink(true);
+        else setGetlink('error');
+    }
+
+    if (webSiteClick) return <Config webSiteClick={webSiteClick} setWebSiteClick={setWebSiteClick} />
     return (
         <section className="w-[95%] flex flex-col items-center">
             <table className="text-center text-[16px] w-full sm:w-[90%] lg:w-[80%] xl:w-[60%]">
@@ -39,7 +47,7 @@ export default function ListUrl({ setWebSite }: listUrlType) {
                             <td >{element.websiteID}</td>
                             <td >{element.urlwebsite}</td>
                             <td >
-                                <button className="mr-2 text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer" onClick={() => setWebSite(element)}>Abrir</button>
+                                <button className="mr-2 text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer" onClick={() => openImports(element)}>Abrir</button>
                             </td>
                             <td>
                                 <Image

@@ -8,11 +8,15 @@ export async function generationPosts() {
     method: 'POST'
   }).then(response => response.json());
 }
-export async function updatePosts() {
+export async function updatePosts(websiteID: number) {
   return await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/content-researcher/update-posts-colun`,
+    `${process.env.NEXT_PUBLIC_API_URL}/content-researcher/update-posts`,
     {
-      method: "POST",
+      method: "PATCH",
+      headers: {
+        'Content-Type': 'Application/json',
+      },
+      body: JSON.stringify({websiteID: websiteID})
     }
   ).then((response) => response.json());
 }

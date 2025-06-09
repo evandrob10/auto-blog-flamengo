@@ -1,6 +1,6 @@
 'use client';
 import { SetStateAction, useState } from 'react';
-export default function Config({ webSiteClick , setWebSiteClick }: { webSiteClick: number, setWebSiteClick: React.Dispatch<SetStateAction<undefined>> }) {
+export default function Config({ webSiteClick , setWebSiteClick }: { webSiteClick: number, setWebSiteClick: React.Dispatch<SetStateAction<number | undefined>> }) {
 
   const [typeWaitLoadPage, setTypeWaitLoadPage] = useState<string>();
 

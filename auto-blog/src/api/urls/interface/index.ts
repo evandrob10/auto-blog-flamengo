@@ -1,4 +1,4 @@
-export interface urlType{
-    websiteID: number;
-    urlwebsite: string;
+export interface urlType {
+  websiteID: number;
+  urlwebsite: string;
 }
