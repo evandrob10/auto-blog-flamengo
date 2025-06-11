@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 //Prisma
 import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
+import { CreateConfigDto } from './dto/createWebConfig.dto';
+import { updateWebConfig } from './dto/updateWebConfig';
 
 @Injectable()
 export class WebsiteService {
@@ -8,8 +10,10 @@ export class WebsiteService {
   public dataWebSite: { websiteID: number; urlwebsite: string } | null;
   constructor(private readonly prisma: PrismaClientService) {}
 
-  async updateWebSite(url: string) {
-    this.dataWebSite = await this.getWebSite(url);
+  async getWebConfig(websiteID: number) {
+    return await this.prisma.webConfig.findMany({
+      where: { websiteID: websiteID },
+    });
   }
 
   async getAllWebSite() {
@@ -20,6 +24,39 @@ export class WebsiteService {
     return await this.prisma.website.create({
       data: {
         urlwebsite: url,
+      },
+    });
+  }
+
+  async createWebConfig(webConfig: CreateConfigDto) {
+    return await this.prisma.webConfig.create({
+      data: {
+        websiteID: webConfig.websiteID,
+        selectAwaitLoad: webConfig.selectAwaitLoad,
+        selectorPosts: webConfig.selectorPosts,
+        selectorContent: webConfig.selectorContent,
+        selectorTitle: webConfig.selectorTitle,
+        typeAwaitLoad: webConfig.typeAwaitLoad,
+      },
+    });
+  }
+
+  async updateWebSite(url: string) {
+    this.dataWebSite = await this.getWebSite(url);
+  }
+
+  async updateWebConfig(websiteID: number, webConfig: updateWebConfig) {
+    return await this.prisma.webConfig.update({
+      where: {
+        websiteID: websiteID,
+      },
+      data: {
+        websiteID: webConfig.websiteID,
+        selectAwaitLoad: webConfig.selectAwaitLoad,
+        selectorPosts: webConfig.selectorPosts,
+        selectorContent: webConfig.selectorContent,
+        selectorTitle: webConfig.selectorTitle,
+        typeAwaitLoad: webConfig.typeAwaitLoad,
       },
     });
   }

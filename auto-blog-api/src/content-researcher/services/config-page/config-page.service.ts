@@ -11,13 +11,13 @@ export class ConfigPage {
   //Configuração das paginas:
 
   async browserInit(): Promise<void> {
-    this.browser = await puppeteer.launch({ headless: true });
+    this.browser = await puppeteer.launch();
     this.page = await this.createSectionsPage();
   }
 
   async createSectionsPage(): Promise<Page> {
-    const page = await this.browser.newPage();
-    return page;
+    const page = await this.browser.pages();
+    return page[0];
   }
 
   async openPage(

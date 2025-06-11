@@ -18,6 +18,18 @@ model Website {
   websiteID    Int            @id @unique @default(autoincrement())
   urlwebsite   String         @unique
   linksExtract linksExtract[]
+  webConfig webConfig?
+}
+
+model webConfig{
+  webConfigID Int @unique @id @default(autoincrement())
+  typeAwaitLoad String
+  selectAwaitLoad String?
+  selectorPosts String
+  selectorTitle String
+  selectorContent String
+  websiteID Int @unique
+  Website Website @relation(fields: [websiteID], references: [websiteID])
 }
 
 model linksExtract {

@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
-//DTO'S
-import { PostsDto } from './dto/posts.dto';
 //Services
+import { WebsiteService } from 'src/website/website.service';
 import { WritersService } from 'src/writers/writers.service';
 import { ContentResearcherService } from '../content-researcher.service';
 import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
 
 @Injectable()
 export class ExtractPosts extends ContentResearcherService {
-  constructor(prisma: PrismaClientService, WritersService: WritersService) {
+  constructor(
+    prisma: PrismaClientService,
+    WritersService: WritersService,
+    private readonly WebsiteService: WebsiteService,
+  ) {
     super(prisma, WritersService);
   }
 
@@ -20,56 +23,63 @@ export class ExtractPosts extends ContentResearcherService {
   }
 
   async extractPosts(websiteID: number) {
-    const newPosts: {
-      postCollectID: number;
-      title: string;
-      content: string;
-      linkExtractID: number;
-    }[] = [];
-    if (websiteID) {
-      //Nova page para cada extração:
-      await this.browserInit();
-      await this.createSectionsPage();
-      //Pegar todos os links:
-      const linksPosts: { linkID: number; link: string }[] =
-        await this.getAllLinks(websiteID);
-      //Carregamento:
-      let count: number = 0;
-      for (const linkPost of linksPosts) {
-        //Verifica se link ja tem post na db:
-        const post = await this.ckeckPost(linkPost.linkID);
-        //Extrair post:
-        if (linkPost.link && !post) {
-          await this.openPage(linkPost.link, {
-            type: 'selector',
-            value: 'h1',
-          });
-          //Seleciona os dados:
-          const post: PostsDto = await this.page.evaluate(() => {
-            const h1 = document.querySelector('h1')?.innerText;
-            let content = '';
-            const listOfContent = document.querySelectorAll('.e-ct-outer p');
-            listOfContent.forEach((element) => (content += element.innerHTML));
-            return {
-              title: h1 ? h1 : '',
-              content: content,
-            };
-          });
-          //Cria o post:
-          const response = await this.createPost(
-            linkPost.linkID,
-            post.title,
-            post.content,
-          );
-          newPosts.push(response);
-          count += 1;
-        }
-        //Limita a importação de 5 por vez!
-        if (count > 4) break;
-      }
-      await this.closePage();
+    const config = await this.WebsiteService.getWebConfig(websiteID);
+    if (config.length) {
+      const newPosts: {
+        postCollectID: number;
+        title: string;
+        content: string;
+        linkExtractID: number;
+      }[] = [];
+      if (websiteID) {
+        //Nova page para cada extração:
+        await this.browserInit();
+        await this.createSectionsPage();
+        //Pegar todos os links:
+        const linksPosts: { linkID: number; link: string }[] =
+          await this.getAllLinks(websiteID);
+        //Carregamento:
+        for (const linkPost of linksPosts) {
+          //Verifica se link ja tem post na db:
+          const post = await this.ckeckPost(linkPost.linkID);
+          //Extrair post:
+          if (linkPost.link && !post) {
+            try {
+              await this.openPage(linkPost.link, {
+                type: config[0].typeAwaitLoad,
+                value: `${config[0].selectAwaitLoad}`,
+              });
 
-      return newPosts;
+              //title:
+              const title = await this.page.$eval(
+                config[0].selectorTitle,
+                (el) => el.innerHTML,
+              );
+              //content
+              const content = await this.page.$$eval(
+                config[0].selectorContent,
+                (el) => {
+                  let content = '';
+                  el.forEach((element) => (content += element.innerHTML));
+                  return content;
+                },
+              );
+              //Cria o post:
+              const response = await this.createPost(
+                linkPost.linkID,
+                title,
+                content,
+              );
+              newPosts.push(response);
+            } catch {
+              continue;
+            }
+          }
+        }
+        await this.closePage();
+
+        return newPosts;
+      }
     }
   }
 

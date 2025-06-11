@@ -25,6 +25,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "github:nestjs/swagger",
     "@prisma/client": "^6.9.0",
     "puppeteer": "^24.10.0",
     "reflect-metadata": "^0.2.2",

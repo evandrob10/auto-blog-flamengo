@@ -2,13 +2,18 @@ import { Injectable } from '@nestjs/common';
 //DTO'S
 import { LinksPostsDto } from './dto/extract.dto';
 //Services
+import { WebsiteService } from 'src/website/website.service';
 import { WritersService } from 'src/writers/writers.service';
 import { ContentResearcherService } from '../content-researcher.service';
 import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
 
 @Injectable()
 export class ExtractLinks extends ContentResearcherService {
-  constructor(prisma: PrismaClientService, WritersService: WritersService) {
+  constructor(
+    prisma: PrismaClientService,
+    WritersService: WritersService,
+    private readonly WebsiteService: WebsiteService,
+  ) {
     super(prisma, WritersService);
   }
 
@@ -26,15 +31,16 @@ export class ExtractLinks extends ContentResearcherService {
     websiteID: number;
     urlwebsite: string;
   }) {
+    const config = await this.WebsiteService.getWebConfig(websiteID);
     await this.browserInit();
     await this.openPage(urlwebsite, {
-      type: 'selector',
-      value: '.p-url',
+      type: config[0].typeAwaitLoad,
+      value: config[0].selectAwaitLoad ? config[0].typeAwaitLoad : '',
     });
     try {
       if (urlwebsite) {
         const response: LinksPostsDto[] = await this.page.$$eval(
-          '.p-url',
+          `${config[0].selectorPosts}`,
           (elements) => {
             return elements.map((el) => ({
               href: el.getAttribute('href'),

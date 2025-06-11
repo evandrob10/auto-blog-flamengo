@@ -1,13 +1,19 @@
 'use client';
-import { getAllUrl } from "@/api/urls";
-import { urlType } from "@/api/urls/interface";
 import { useCallback, useEffect, useState } from "react";
-import { listUrlType } from "./interface";
-import Image from "next/image";
+//Componentes
 import Config from "./Config";
+import Image from "next/image";
+//Api
+import { getAllUrl } from "@/api/urls";
 import { updateLinks } from "@/api/links";
+//Interface
+import { listUrlType } from "./interface";
+import { webConfig } from "@/api/web/interface";
+import { urlType } from "@/api/urls/interface";
+import { getWebConfig } from "@/api/web";
 
 export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
+    const [web, SetWebConfig] = useState<webConfig>();
     const [allUrl, setAllUrl] = useState<urlType[]>()
     const [webSiteClick, setWebSiteClick] = useState<number | undefined>()
 
@@ -16,7 +22,10 @@ export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
         if (allListUrl) setAllUrl(allListUrl);
     }, [])
 
+    const teste = async () => await getWebConfig(1);
+
     useEffect(() => {
+        console.log(teste());
         getAllUrls();
     }, [getAllUrls])
 
@@ -42,25 +51,27 @@ export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
                     </tr>
                 </thead>
                 <tbody className="text-[14px]">
-                    {allUrl && allUrl.map((element) => (
-                        <tr key={element.websiteID} >
-                            <td >{element.websiteID}</td>
-                            <td >{element.urlwebsite}</td>
-                            <td >
-                                <button className="mr-2 text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer" onClick={() => openImports(element)}>Abrir</button>
-                            </td>
-                            <td>
-                                <Image
-                                    width={20}
-                                    height={20}
-                                    src={'/img/engrenagem.png'}
-                                    alt="Configuração url"
-                                    className="py-3 cursor-pointer"
-                                    onClick={() => setWebSiteClick(element.websiteID)}
-                                />
-                            </td>
-                        </tr>
-                    ))}
+                    {allUrl && allUrl.map((element) => {
+                        return (
+                            <tr key={element.websiteID} >
+                                <td >{element.websiteID}</td>
+                                <td >{element.urlwebsite}</td>
+                                <td >
+                                    <button className={`mr-2 text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer`} onClick={() => openImports(element)}>Abrir</button>
+                                </td>
+                                <td>
+                                    <Image
+                                        width={20}
+                                        height={20}
+                                        src={'/img/engrenagem.png'}
+                                        alt="Configuração url"
+                                        className="py-3 cursor-pointer"
+                                        onClick={() => setWebSiteClick(element.websiteID)}
+                                    />
+                                </td>
+                            </tr>
+                        )
+                    })}
                 </tbody>
             </table>
         </section>

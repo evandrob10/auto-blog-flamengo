@@ -1,8 +1,57 @@
 'use client';
-import { SetStateAction, useState } from 'react';
-export default function Config({ webSiteClick , setWebSiteClick }: { webSiteClick: number, setWebSiteClick: React.Dispatch<SetStateAction<number | undefined>> }) {
+import { SetStateAction, useCallback, useEffect, useState } from 'react';
+//interfaces:
+import { webConfig } from '@/api/web/interface';
+import { createWebConfig, getWebConfig, updateWebConfig } from '@/api/web';
 
-  const [typeWaitLoadPage, setTypeWaitLoadPage] = useState<string>();
+export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick: number, setWebSiteClick: React.Dispatch<SetStateAction<number | undefined>> }) {
+
+  const [configExist, setConfigExist] = useState<boolean>(false);
+  const [webConfig, setWebConfig] = useState<webConfig>()
+
+  //Pega configuração ja salva:
+  const config = useCallback(async () => {
+    const config: webConfig[] = await getWebConfig(webSiteClick);
+    if (config[0].webConfigID) {
+      setWebConfig(config[0]);
+      setConfigExist(true);
+    }
+    else {
+      setWebConfig(config[0]);
+      setWebConfig(prev => prev ? ({ ...prev, websiteID: webSiteClick }) : prev);
+    }
+  }, [webSiteClick])
+  //Salva config: 
+  const saveConfig = async () => {
+    if (webConfig) {
+      const config: webConfig = await createWebConfig(webConfig);
+      setWebConfig(config);
+    }
+  }
+  //Atualizar configuração:
+  const updateConfig = async () => {
+    if (webConfig) {
+      const config: webConfig = await updateWebConfig(webSiteClick, webConfig);
+      setWebConfig(config);
+    }
+  }
+
+  const validConfig = () => {
+    if (webConfig) {
+      if (!webConfig.typeAwaitLoad) return console.log('Você esqueceu de selecionar o tipo de espera!');
+      if (webConfig.typeAwaitLoad === 'selector' && !webConfig.selectAwaitLoad) return console.log('Você esqueceu preencher o seletor esperado!');
+      if (!webConfig.selectorPosts) return console.log('Faltou dizer o seletor dos posts');
+      if (!webConfig.selectorTitle) return console.log('Faltou dizer o seletor do titulo.');
+      if (!webConfig.selectorContent) return console.log('Faltou dizer o seletor do conteudo.');
+    }
+    
+    if (configExist) updateConfig()
+    else saveConfig();
+  }
+
+  useEffect(() => {
+    config();
+  }, [config])
 
 
   return (
@@ -12,15 +61,15 @@ export default function Config({ webSiteClick , setWebSiteClick }: { webSiteClic
         <h2 className="mb-3">Pagina:</h2>
         <div className="">
           <label htmlFor="loadPage">Tipo de espera:</label>
-          <select name="" id="loadPage" className="w-full border-1 p-1 my-1" onChange={event => setTypeWaitLoadPage(event.target.value)}>
+          <select name="" id="loadPage" value={webConfig?.typeAwaitLoad} onChange={event => setWebConfig(prev => prev ? ({ ...prev, typeAwaitLoad: event.target.value as string }) : prev)} className="w-full border-1 p-1 my-1">
             <option value="">Selecione o seletor</option>
             <option value="selector">Tag, Class, ID</option>
             <option value="awaitNetLoad">Script Loads</option>
           </select>
-          {typeWaitLoadPage && (typeWaitLoadPage === 'selector') && (
+          {webConfig && (webConfig?.typeAwaitLoad === 'selector') && (
             <>
               <label htmlFor="seletor" className='w-[20%]'>Seletor:</label>
-              <input id="seletor" className='my-1 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+              <input id="seletor" value={webConfig?.selectAwaitLoad} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectAwaitLoad: event.target.value as string }) : prev)} className='my-1 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
             </>
           )}
         </div>
@@ -28,23 +77,23 @@ export default function Config({ webSiteClick , setWebSiteClick }: { webSiteClic
         <div className="">
           <div>
             <label htmlFor="posts">Seletor postagens:</label>
-            <input id="posts" className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+            <input id="posts" value={webConfig?.selectorPosts} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorPosts: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
           </div>
         </div>
         <h2 className="my-3">Conteúdo das postagens:</h2>
         <div className="">
           <div>
             <label htmlFor="title">Seletor titulo:</label>
-            <input id="title" className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+            <input id="title" value={webConfig?.selectorTitle} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorTitle: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
           </div>
           <div>
             <label htmlFor="content">Seletor conteúdo:</label>
-            <input id="content" className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+            <input id="content" value={webConfig?.selectorContent} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorContent: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
           </div>
         </div>
       </div>
       <div className='w-full mt-6 flex flex-col justify-center items-center'>
-        <button type='button' className='w-[50%] text-[18px] mb-2 mr-2 border-none bg-blue-600 py-2 px-4 rounded-2xl text-[#FFF] cursor-pointer'>SALVAR</button>
+        <button type='button' className='w-[50%] text-[18px] mb-2 mr-2 border-none bg-blue-600 py-2 px-4 rounded-2xl text-[#FFF] cursor-pointer' onClick={event =>{ event.preventDefault();validConfig()}}>SALVAR</button>
         <button className='w-[50%] text-[18px] mb-2 mr-2 border-none bg-[#F1F1F1] py-2 px-4 rounded-2xl cursor-pointer' onClick={() => setWebSiteClick(undefined)}>VOLTAR</button>
       </div>
     </section>
