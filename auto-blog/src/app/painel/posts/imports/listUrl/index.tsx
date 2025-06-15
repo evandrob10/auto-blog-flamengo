@@ -8,24 +8,30 @@ import { getAllUrl } from "@/api/urls";
 import { updateLinks } from "@/api/links";
 //Interface
 import { listUrlType } from "./interface";
-import { webConfig } from "@/api/web/interface";
 import { urlType } from "@/api/urls/interface";
-import { getWebConfig } from "@/api/web";
+import { addWebSite } from "@/api/web";
 
 export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
-    const [web, SetWebConfig] = useState<webConfig>();
-    const [allUrl, setAllUrl] = useState<urlType[]>()
+    const [openInputUrl, setOpenInputUrl] = useState<boolean>(false);
+    const [allUrl, setAllUrl] = useState<urlType[]>();
+    const [url, setUrl] = useState<string>();
     const [webSiteClick, setWebSiteClick] = useState<number | undefined>()
+
+
 
     const getAllUrls = useCallback(async () => {
         const allListUrl: urlType[] = await getAllUrl();
         if (allListUrl) setAllUrl(allListUrl);
     }, [])
 
-    const teste = async () => await getWebConfig(1);
+    const addUrl = async () => {
+        if (url) {
+            const response = await addWebSite(url);
+            if (response) getAllUrls();
+        }
+    }
 
     useEffect(() => {
-        console.log(teste());
         getAllUrls();
     }, [getAllUrls])
 
@@ -40,8 +46,18 @@ export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
     return (
         <section className="w-[95%] flex flex-col items-center">
             <table className="text-center text-[16px] w-full sm:w-[90%] lg:w-[80%] xl:w-[60%]">
-                <caption>
-                    <h1 className="py-2 mb-3 text-start font-bold">LISTA DE URL:</h1>
+                <caption className="mb-3">
+                    <div className="flex justify-between items-center">
+                        <h1 className="py-2 mb-2 font-bold inline-block">LISTA DE URL:</h1>
+                        <button className={`mr-3 text-[12px] bg-blue-500 text-[#FFF] py-1 px-3 rounded-3xl cursor-pointer`} onClick={() => setOpenInputUrl(prev => prev ? false : true)}>+</button>
+                    </div>
+
+                    {openInputUrl &&
+                        <div>
+                            <input onChange={event => setUrl(event.target.value)} className='my-1 py-1 px-2 border-1 w-[75%] mr-1' type="text" />
+                            <button type="button" className="text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer" onClick={addUrl}>ADICIONAR</button>
+                        </div>
+                    }
                 </caption>
                 <thead className="border-b-2">
                     <tr>

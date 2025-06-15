@@ -7,7 +7,14 @@ import { createWebConfig, getWebConfig, updateWebConfig } from '@/api/web';
 export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick: number, setWebSiteClick: React.Dispatch<SetStateAction<number | undefined>> }) {
 
   const [configExist, setConfigExist] = useState<boolean>(false);
-  const [webConfig, setWebConfig] = useState<webConfig>()
+  const [webConfig, setWebConfig] = useState<webConfig>({
+    typeAwaitLoad: '',
+    selectAwaitLoad: '',
+    selectorPosts: '',
+    selectorTitle: '',
+    selectorContent: '',
+    websiteID: webSiteClick,
+  })
 
   //Pega configuração ja salva:
   const config = useCallback(async () => {
@@ -15,10 +22,6 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
     if (config[0].webConfigID) {
       setWebConfig(config[0]);
       setConfigExist(true);
-    }
-    else {
-      setWebConfig(config[0]);
-      setWebConfig(prev => prev ? ({ ...prev, websiteID: webSiteClick }) : prev);
     }
   }, [webSiteClick])
   //Salva config: 
@@ -44,7 +47,7 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
       if (!webConfig.selectorTitle) return console.log('Faltou dizer o seletor do titulo.');
       if (!webConfig.selectorContent) return console.log('Faltou dizer o seletor do conteudo.');
     }
-    
+
     if (configExist) updateConfig()
     else saveConfig();
   }
@@ -93,7 +96,7 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
         </div>
       </div>
       <div className='w-full mt-6 flex flex-col justify-center items-center'>
-        <button type='button' className='w-[50%] text-[18px] mb-2 mr-2 border-none bg-blue-600 py-2 px-4 rounded-2xl text-[#FFF] cursor-pointer' onClick={event =>{ event.preventDefault();validConfig()}}>SALVAR</button>
+        <button type='button' className='w-[50%] text-[18px] mb-2 mr-2 border-none bg-blue-600 py-2 px-4 rounded-2xl text-[#FFF] cursor-pointer' onClick={event => { event.preventDefault(); validConfig() }}>SALVAR</button>
         <button className='w-[50%] text-[18px] mb-2 mr-2 border-none bg-[#F1F1F1] py-2 px-4 rounded-2xl cursor-pointer' onClick={() => setWebSiteClick(undefined)}>VOLTAR</button>
       </div>
     </section>

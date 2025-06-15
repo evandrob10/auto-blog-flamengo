@@ -14,22 +14,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Website {
-  websiteID    Int            @id @unique @default(autoincrement())
-  urlwebsite   String         @unique
-  linksExtract linksExtract[]
-  webConfig webConfig?
+model User {
+  userID    Int    @id @unique @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+  password  String
+
+  Website     Website[]
+  postFinally postFinally?
 }
 
-model webConfig{
-  webConfigID Int @unique @id @default(autoincrement())
-  typeAwaitLoad String
+model Website {
+  websiteID  Int    @id @unique @default(autoincrement())
+  urlwebsite String
+
+  //Relações: 
+  userID Int
+  User   User @relation(fields: [userID], references: [userID])
+
+  linksExtract linksExtract[]
+  webConfig    webConfig?
+}
+
+model webConfig {
+  webConfigID     Int     @id @unique @default(autoincrement())
+  typeAwaitLoad   String
   selectAwaitLoad String?
-  selectorPosts String
-  selectorTitle String
+  selectorPosts   String
+  selectorTitle   String
   selectorContent String
-  websiteID Int @unique
-  Website Website @relation(fields: [websiteID], references: [websiteID])
+  websiteID       Int     @unique
+  Website         Website @relation(fields: [websiteID], references: [websiteID])
 }
 
 model linksExtract {
@@ -42,6 +58,7 @@ model linksExtract {
 
 model postCollect {
   postCollectID Int          @id @unique @default(autoincrement())
+  dateTime      DateTime?
   title         String
   content       String
   linkExtractID Int          @unique
@@ -50,11 +67,16 @@ model postCollect {
 }
 
 model postFinally {
-  postFinallyID Int         @id @unique @default(autoincrement())
+  postFinallyID Int    @id @unique @default(autoincrement())
   title         String
   content       String
   summary       String
   keywords      String
+  featuredPost  String
+
+  authorID Int  @unique
+  author   User @relation(fields: [authorID], references: [userID])
+
   postCollectID Int         @unique
   postCollect   postCollect @relation(fields: [postCollectID], references: [postCollectID])
 }
