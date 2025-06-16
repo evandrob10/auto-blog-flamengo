@@ -9,12 +9,7 @@ import { PostFinallyType } from './dto/CreatePostFinally.dto';
 @Injectable()
 export class WritersService {
   constructor(private readonly prisma: PrismaClientService) {}
-  onModuleInt() {
-    setInterval(() => {
-      this.postFinallyInit().catch(() => console.log('aconteceu um error!'));
-      return '';
-    }, 5000);
-  }
+
   private ia = genkit({
     plugins: [googleAI({ apiKey: process.env.GEMINI_API_KEY })],
     model: gemini('gemini-1.5-flash'),
@@ -53,7 +48,11 @@ export class WritersService {
     }
   }
 
-  async registerPost(textBasic: string, postCollectID: number) {
+  async registerPost(
+    authorID: number,
+    textBasic: string,
+    postCollectID: number,
+  ) {
     const mainPrompt = this.filterPrompt(textBasic, 'main');
     const main = mainPrompt && (await this.createContent(mainPrompt)).text;
     const mainTitle = main && this.filterPrompt(main, 'title');
@@ -71,6 +70,8 @@ export class WritersService {
           content: main,
           summary: summary,
           keywords: keywords,
+          authorID: authorID,
+          featuredPost: '',
           postCollectID: postCollectID,
         },
       });
@@ -98,7 +99,7 @@ export class WritersService {
         );
         if (count > 1) break;
         if (checkPost) continue;
-        await this.registerPost(post.content, post.postCollectID);
+        await this.registerPost(1, post.content, post.postCollectID);
         count += 1;
       }
     }

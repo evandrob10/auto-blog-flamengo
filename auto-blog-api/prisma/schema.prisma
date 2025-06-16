@@ -18,7 +18,7 @@ model User {
   userID    Int    @id @unique @default(autoincrement())
   firstName String
   lastName  String
-  email     String
+  email     String @unique
   password  String
 
   Website     Website[]

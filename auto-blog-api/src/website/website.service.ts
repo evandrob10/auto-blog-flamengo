@@ -20,9 +20,10 @@ export class WebsiteService {
     return await this.prisma.website.findMany();
   }
 
-  async createWebSite(url: string) {
+  async createWebSite(userID: number, url: string) {
     return await this.prisma.website.create({
       data: {
+        userID: userID,
         urlwebsite: url,
       },
     });
@@ -41,9 +42,7 @@ export class WebsiteService {
     });
   }
 
-  async updateWebSite(url: string) {
-    this.dataWebSite = await this.getWebSite(url);
-  }
+  async updateWebSite(url: string) {}
 
   async updateWebConfig(websiteID: number, webConfig: updateWebConfig) {
     return await this.prisma.webConfig.update({
@@ -61,9 +60,10 @@ export class WebsiteService {
     });
   }
 
-  async getWebSite(url: string) {
-    return await this.prisma.website.findUnique({
+  async getWebSite(userID: number, url: string) {
+    return await this.prisma.website.findFirst({
       where: {
+        userID: userID,
         urlwebsite: url,
       },
     });

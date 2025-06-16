@@ -19,9 +19,9 @@ export class WebsiteController {
     return this.WebsiteService.getAllWebSite();
   }
 
-  @Get('/:url')
-  getWebSite(@Param('url') url: string) {
-    return this.WebsiteService.getWebSite(url);
+  @Get('/:userid/:url')
+  getWebSite(@Param() { userID, url }: { userID: string; url: string }) {
+    return this.WebsiteService.getWebSite(+userID, url);
   }
 
   @Post('/add-config')
@@ -29,9 +29,9 @@ export class WebsiteController {
     return this.WebsiteService.createWebConfig(webConfig);
   }
 
-  @Post('/add-website')
-  createWebsite(@Body('url') url: string) {
-    return this.WebsiteService.createWebSite(url);
+  @Post('/add-website/:userID')
+  createWebsite(@Param('userID') userID: string, @Body('url') url: string) {
+    return this.WebsiteService.createWebSite(+userID, url);
   }
 
   @Patch('/update-web-config/:websiteID')

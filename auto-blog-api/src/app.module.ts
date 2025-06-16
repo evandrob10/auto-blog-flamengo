@@ -6,6 +6,8 @@ import { WritersModule } from './writers/writers.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaClientModule } from './prisma-client/prisma-client.module';
 import { WebsiteModule } from './website/website.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { WebsiteModule } from './website/website.module';
       isGlobal: true,
     }),
     WebsiteModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
