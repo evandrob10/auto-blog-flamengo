@@ -1,7 +1,8 @@
 'use client';
 import Link from "next/link";
-import { verifyToken } from "@/api/Auth";
+import { logout, verifyToken } from "@/api/Auth";
 import { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
 
 export default function Navigation() {
 
@@ -25,11 +26,15 @@ export default function Navigation() {
             path: '/painel/posts/imports'
         }
     ]
-    const handlerOpenNav = () => setOpenNav(prev => prev ? false: true);
+    const handlerOpenNav = () => setOpenNav(prev => prev ? false : true);
     useEffect(() => {
         const interval = setInterval(verifyToken, 8000);
         return () => clearInterval(interval);
     }, [])
+    const handlerLogout = async () => {
+        const response = await logout();
+        if (response.logout) redirect('/auth/login');
+    }
 
     return (
         <header className={`bg-[#ED5684] min-h-[8vh] relative`}>
@@ -46,7 +51,7 @@ export default function Navigation() {
                 </div>
                 <ul className='mx-auto h-[92vh] flex flex-col justify-center items-center  py-2 text-[#FFF] sm:w-[40%]'>
                     {itemsNav && itemsNav.map((element, index) => (
-                        <Link onClick={handlerOpenNav} key={index} href={element.path} className="mb-5 text-2xl hover:scale-110">{(element.name.toUpperCase())}</Link>
+                        <Link onClick={() => { if (element.name === 'sair') handlerLogout(); handlerOpenNav() }} key={index} href={element.path} className="mb-5 text-2xl hover:scale-110">{(element.name.toUpperCase())}</Link>
                     ))}
                 </ul>
             </nav>

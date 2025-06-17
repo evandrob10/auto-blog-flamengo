@@ -46,4 +46,15 @@ export class AuthController {
       };
     }
   }
+
+  @Post('/logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('token', {
+      httpOnly: true,
+      sameSite: 'lax',
+    });
+    return {
+      logout: true,
+    };
+  }
 }
