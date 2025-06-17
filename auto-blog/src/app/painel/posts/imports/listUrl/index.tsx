@@ -44,7 +44,7 @@ export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
 
     if (webSiteClick) return <Config webSiteClick={webSiteClick} setWebSiteClick={setWebSiteClick} />
     return (
-        <section className="w-[95%] flex flex-col items-center">
+        <section className="w-full flex flex-col items-center">
             <table className="text-center text-[16px] w-full sm:w-[90%] lg:w-[80%] xl:w-[60%]">
                 <caption className="mb-3">
                     <div className="flex justify-between items-center">

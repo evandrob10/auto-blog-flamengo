@@ -1,5 +1,5 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -16,14 +16,34 @@ export class AuthController {
       res.cookie('token', token, {
         httpOnly: true,
         sameSite: 'lax',
-        maxAge: 1000 * 60 * 60,
       });
     return {
-      acess: 'autorizado!',
+      access: 'autorizado!',
     };
   }
-  @Post()
-  verifyToken(@Body('token') token: string) {
-    return this.AuthService.verifyToken(token);
+  @Post('/verifyToken')
+  async verifyToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const token: string = req?.cookies?.token as string;
+    try {
+      if (token) {
+        const user = await this.AuthService.verifyToken(token);
+        return user;
+      } else {
+        return {
+          access: false,
+        };
+      }
+    } catch {
+      res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'lax',
+      });
+      return {
+        access: false,
+      };
+    }
   }
 }

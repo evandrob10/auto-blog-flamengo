@@ -1,5 +1,5 @@
 'use client';
-import { createUser } from '@/api/Auth';
+import { auth, createUser } from '@/api/Auth';
 import { CreateUserType } from '@/api/Auth/interface';
 import Link from 'next/link'
 import { redirect } from 'next/navigation';
@@ -29,7 +29,8 @@ export default function Register() {
         if (response && dataUser) {
             createUser(dataUser);
             setMessage('Cadastrado com sucesso!');
-            setTimeout(() => redirect('/auth/login'), 2000)
+            await auth(dataUser.email, dataUser.password);
+            setTimeout(() => redirect('/painel'), 2000)
         }
     }
 

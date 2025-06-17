@@ -4,7 +4,6 @@ import { UserService } from 'src/user/user.service';
 import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { AuthDto } from './dto/auth.dto';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {

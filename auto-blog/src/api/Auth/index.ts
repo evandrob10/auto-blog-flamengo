@@ -20,3 +20,12 @@ export async function auth(email: string, password: string) {
     body: JSON.stringify({ email, password }),
   });
 }
+export async function verifyToken() {
+  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verifyToken`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => response.json());
+}

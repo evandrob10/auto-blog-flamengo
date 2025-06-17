@@ -14,10 +14,8 @@ export default function PainelLayout({
 }>) {
   return (
     <>
-      <header className="mb-5">
-        <Navigation />
-      </header>
-      <main className="h-screen flex justify-center">
+      <Navigation />
+      <main className="h-[92vh] flex justify-center p-4">
         {children}
       </main>
     </>
