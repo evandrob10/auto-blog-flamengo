@@ -16,8 +16,12 @@ export class WebsiteService {
     });
   }
 
-  async getAllWebSite() {
-    return await this.prisma.website.findMany();
+  async getAllWebSite(userID: number) {
+    return await this.prisma.website.findMany({
+      where: {
+        userID: userID,
+      },
+    });
   }
 
   async createWebSite(userID: number, url: string) {

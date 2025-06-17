@@ -10,6 +10,7 @@ import { updateLinks } from "@/api/links";
 import { listUrlType } from "./interface";
 import { urlType } from "@/api/urls/interface";
 import { addWebSite } from "@/api/web";
+import { verifyToken } from "@/api/Auth";
 
 export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
     const [openInputUrl, setOpenInputUrl] = useState<boolean>(false);
@@ -20,15 +21,19 @@ export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
 
 
     const getAllUrls = useCallback(async () => {
-        const allListUrl: urlType[] = await getAllUrl();
+        const user = await verifyToken();
+        const allListUrl: urlType[] = user.userID ? await getAllUrl(user.userID) : [];
         if (allListUrl) setAllUrl(allListUrl);
     }, [])
 
     const addUrl = async () => {
+        const user = await verifyToken();
         if (url) {
-            const response = await addWebSite(url);
-            if (response) getAllUrls();
+            const response = await addWebSite(user.userID, url);
+            if (response && user.userID) getAllUrls();
         }
+        setUrl('');
+        setOpenInputUrl(false);
     }
 
     useEffect(() => {
@@ -51,10 +56,9 @@ export default function ListUrl({ setWebSite, setGetlink }: listUrlType) {
                         <h1 className="py-2 mb-2 font-bold inline-block">LISTA DE URL:</h1>
                         <button className={`mr-3 text-[12px] bg-blue-500 text-[#FFF] py-1 px-3 rounded-3xl cursor-pointer`} onClick={() => setOpenInputUrl(prev => prev ? false : true)}>+</button>
                     </div>
-
                     {openInputUrl &&
                         <div>
-                            <input onChange={event => setUrl(event.target.value)} className='my-1 py-1 px-2 border-1 w-[75%] mr-1' type="text" />
+                            <input onChange={event => setUrl(event.target.value)} className='my-1 py-1 px-2 border-1 w-[75%] mr-1' type="text" value={url ? url : ''}/>
                             <button type="button" className="text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer" onClick={addUrl}>ADICIONAR</button>
                         </div>
                     }

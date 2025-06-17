@@ -19,7 +19,7 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
   //Pega configuração ja salva:
   const config = useCallback(async () => {
     const config: webConfig[] = await getWebConfig(webSiteClick);
-    if (config[0].webConfigID) {
+    if (config[0]?.webConfigID) {
       setWebConfig(config[0]);
       setConfigExist(true);
     }
@@ -61,10 +61,13 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
     <section className="w-[95%] flex flex-col items-center">
       <h1 className="mb-4">Configuração de importação</h1>
       <div className="w-[80%]">
-        <h2 className="mb-3">Pagina:</h2>
+        <div>
+          <h2 className="mb-3 inline-block">Pagina:</h2>
+          <button className='float-right mr-1 bg-[#ED5684] px-2 rounded-2xl text-[#FFFF] hover:scale-110 cursor-pointer'>deletar</button>
+        </div>
         <div className="">
           <label htmlFor="loadPage">Tipo de espera:</label>
-          <select name="" id="loadPage" value={webConfig?.typeAwaitLoad} onChange={event => setWebConfig(prev => prev ? ({ ...prev, typeAwaitLoad: event.target.value as string }) : prev)} className="w-full border-1 p-1 my-1">
+          <select name="" id="loadPage" value={webConfig?.typeAwaitLoad ? webConfig?.typeAwaitLoad : ''} onChange={event => setWebConfig(prev => prev ? ({ ...prev, typeAwaitLoad: event.target.value as string }) : prev)} className="w-full border-1 p-1 my-1">
             <option value="">Selecione o seletor</option>
             <option value="selector">Tag, Class, ID</option>
             <option value="awaitNetLoad">Script Loads</option>
@@ -72,7 +75,7 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
           {webConfig && (webConfig?.typeAwaitLoad === 'selector') && (
             <>
               <label htmlFor="seletor" className='w-[20%]'>Seletor:</label>
-              <input id="seletor" value={webConfig?.selectAwaitLoad} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectAwaitLoad: event.target.value as string }) : prev)} className='my-1 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+              <input id="seletor" value={webConfig?.selectAwaitLoad ? webConfig?.selectAwaitLoad : ''} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectAwaitLoad: event.target.value as string }) : prev)} className='my-1 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
             </>
           )}
         </div>
@@ -80,18 +83,18 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
         <div className="">
           <div>
             <label htmlFor="posts">Seletor postagens:</label>
-            <input id="posts" value={webConfig?.selectorPosts} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorPosts: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+            <input id="posts" value={webConfig?.selectorPosts ? webConfig?.selectorPosts : webConfig?.selectorPosts} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorPosts: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
           </div>
         </div>
         <h2 className="my-3">Conteúdo das postagens:</h2>
         <div className="">
           <div>
             <label htmlFor="title">Seletor titulo:</label>
-            <input id="title" value={webConfig?.selectorTitle} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorTitle: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+            <input id="title" value={webConfig?.selectorTitle ? webConfig?.selectorTitle : ''} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorTitle: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
           </div>
           <div>
             <label htmlFor="content">Seletor conteúdo:</label>
-            <input id="content" value={webConfig?.selectorContent} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorContent: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+            <input id="content" value={webConfig?.selectorContent ? webConfig?.selectorContent : webConfig?.selectorContent} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorContent: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
           </div>
         </div>
       </div>

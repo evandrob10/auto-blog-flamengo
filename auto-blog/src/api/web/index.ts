@@ -1,20 +1,18 @@
 import { webConfig } from "./interface";
-export async function addWebSite(url: string) {
-  return await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/website/add-website`,{
-      method: 'POST',
-      headers:{
-        'Content-Type': 'Application/json'
-      },
-      body: JSON.stringify({url})
-    }
-  ).then((response) => response.json())
+export async function addWebSite(userID: number, url: string) {
+  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/website/add-website/${userID}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "Application/json",
+    },
+    body: JSON.stringify({ url }),
+  }).then((response) => response.json());
 }
 //Config web extração:
 export async function getWebConfig(websiteID: number) {
   return await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/website/web-config/${websiteID}`
-  ).then((response) => response.json())
+  ).then((response) => response.json());
 }
 
 export async function createWebConfig(webConfig: webConfig) {

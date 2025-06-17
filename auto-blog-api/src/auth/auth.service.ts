@@ -1,14 +1,12 @@
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
-import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { AuthDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaClientService,
     private readonly UserService: UserService,
     private readonly JwtService: JwtService,
   ) {}
@@ -26,7 +24,7 @@ export class AuthService {
       firstName: user.firstName,
       lastName: user.lastName,
     };
-    return await this.JwtService.signAsync(payload)
+    return await this.JwtService.signAsync(payload);
   }
 
   async verifyToken(token: string) {

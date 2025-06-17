@@ -14,9 +14,9 @@ export class WebsiteController {
     return this.WebsiteService.getWebConfig(+websiteID);
   }
 
-  @Get('/all-website')
-  getAllWebSite() {
-    return this.WebsiteService.getAllWebSite();
+  @Get('/all-website/:userID')
+  getAllWebSite(@Param('userID') userID: string) {
+    return this.WebsiteService.getAllWebSite(+userID);
   }
 
   @Get('/:userid/:url')
