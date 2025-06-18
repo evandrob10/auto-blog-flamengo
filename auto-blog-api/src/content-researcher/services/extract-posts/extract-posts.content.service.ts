@@ -32,9 +32,7 @@ export class ExtractPosts extends ContentResearcherService {
         linkExtractID: number;
       }[] = [];
       if (websiteID) {
-        //Nova page para cada extração:
         await this.browserInit();
-        await this.createSectionsPage();
         //Pegar todos os links:
         const linksPosts: { linkID: number; link: string }[] =
           await this.getAllLinks(websiteID);
@@ -47,7 +45,7 @@ export class ExtractPosts extends ContentResearcherService {
             try {
               await this.openPage(linkPost.link, {
                 type: config[0].typeAwaitLoad,
-                value: `${config[0].selectAwaitLoad}`,
+                value: config[0].selectorTitle,
               });
 
               //title:
@@ -76,7 +74,7 @@ export class ExtractPosts extends ContentResearcherService {
             }
           }
         }
-        await this.closePage();
+        await this.closeBrowser();
 
         return newPosts;
       }

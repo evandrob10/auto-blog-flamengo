@@ -37,3 +37,10 @@ export async function updateWebConfig(websiteID: number, webConfig: webConfig) {
     }
   ).then((response) => response.json());
 }
+
+export async function deleteWebSite(websiteID: number) {
+  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/website/${websiteID}`,{
+    method: 'DELETE',
+    credentials: 'include'
+  }).then(response => response.json());
+}

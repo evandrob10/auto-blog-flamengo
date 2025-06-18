@@ -28,3 +28,5 @@ export async function getAllPosts(userID: number, websiteID: string) {
     `${process.env.NEXT_PUBLIC_API_URL}/content-researcher/all-posts/${websiteID}`
   ).then((response) => response.json());
 }
+
+

@@ -1,18 +1,23 @@
 'use client';
-import { PostsType } from '@/api/posts/interface';
-import { newPosts } from '@/api/posts/interface';
-import { updatePosts as update, getAllPosts as posts } from "@/api/posts";
+//HOOKS:
 import { SetStateAction, useCallback, useEffect, useState } from "react";
+//COMPONENTS:
 import Card from './Components/Card';
+//API:
 import { urlType } from '@/api/urls/interface';
+import { newPosts } from '@/api/posts/interface';
+import { PostsType } from '@/api/posts/interface';
+import { deleteLinksPending, updateLinks } from "@/api/links";
+import { updatePosts as update, getAllPosts as posts } from "@/api/posts";
+//Verificador de token:
+import { checkToken } from '@/app/auth/checkToken';
 
 type WebSite = {
     website: urlType
-    setGetlink: React.Dispatch<SetStateAction<boolean | 'error'>>
     setWebSite: React.Dispatch<SetStateAction<urlType | undefined>>
 }
 
-export default function Import({ website, setWebSite, setGetlink }: WebSite) {
+export default function Import({ website, setWebSite }: WebSite) {
     const [message, setMessage] = useState<string>('');
     const [extractData, setExtractData] = useState<boolean>(false);
     const [quantityPosts, setQuantityPosts] = useState<number>(0);
@@ -21,7 +26,8 @@ export default function Import({ website, setWebSite, setGetlink }: WebSite) {
 
     //Pega todos os postes coletados
     const getAllPosts = useCallback(async () => {
-        const AllPosts: PostsType[] = await posts(`${website.websiteID}`);
+        const user = await checkToken();
+        const AllPosts: PostsType[] = user.userID ? await posts(user.userID, String(website.websiteID)) : [];
         //Zera o display de post padrão
         if (website) setQuantityPostsPending(0);
         //Conta quantos links estão pendente de importação do post:
@@ -52,7 +58,7 @@ export default function Import({ website, setWebSite, setGetlink }: WebSite) {
         updatePosts();
     }, [updatePosts])
 
-    async function extract() {
+    async function extract(): Promise<void> {
         setExtractData(true);
         setMessage('');
         const newPosts: newPosts[] = await update(website.websiteID);
@@ -63,15 +69,31 @@ export default function Import({ website, setWebSite, setGetlink }: WebSite) {
         else setMessage('Error ao tentar extrair os posts!');
         setExtractData(false);
     }
+    //Update Links
+    async function extractLinks(): Promise<void> {
+        setExtractData(true);
+        setMessage('');
+        await updateLinks(website);
+        updatePosts();
+        setExtractData(false);
+    }
+    //Deletar links pendentes
+    async function dLinksPending(): Promise<void> {
+        setExtractData(true);
+        setMessage('');
+        await deleteLinksPending(website.websiteID);
+        updatePosts();
+        setExtractData(false);
+    }
 
     return (
         <div className=' xl:w-[50%] xl:h-screen'>
             <div className="text-center text-[16px] xl:flex xl:flex-col xl:justify-evenly xl:h-[50%]">
                 <h2 className="text-[#000] mb-5">URL: {website.urlwebsite}</h2>
                 <div className="flex flex-col items-center justify-center xl:mx-auto xl:flex-row xl:w-[80%] xl:justify-evenly">
-                    <Card quantity={quantityPosts} text='TOTAL LINKS' />
-                    <Card quantity={quantityPostCollect} text='QUANTIDADE POSTS COLETADOS' />
-                    <Card quantity={quantityPostsPending} text='QUANTIDADE PENDENTE' />
+                    <Card quantity={quantityPosts} text='TOTAL LINKS' extract={extractLinks} />
+                    <Card quantity={quantityPostCollect} text='QUANTIDADE POSTS EXTRAIDOS' />
+                    <Card quantity={quantityPostsPending} text='QUANTIDADE PENDENTE' dLinksPending={dLinksPending} />
                 </div>
                 {message &&
                     <div>
@@ -79,7 +101,7 @@ export default function Import({ website, setWebSite, setGetlink }: WebSite) {
                     </div>
                 }
                 <div className="mt-6 flex flex-col justify-center items-center">
-                    {quantityPostsPending !== 0 && (extractData ? <p className='animate-ping'>Carregando...</p> : <button onClick={extract} className={`w-[40%] mb-3 border-none bg-blue-600 py-2 px-6 rounded-[.2em] text-[#FFF] cursor-pointer`}>UPDATE</button>)}
+                    {extractData ? <p className='animate-ping'>Carregando...</p> : <button onClick={extract} className={`mb-3 border-none bg-blue-600 py-2 px-6 rounded-[.2em] text-[#FFF] cursor-pointer`}>EXTRAIR POSTS</button>}
                     <button className={`${extractData && 'hidden'} w-[40%] border-none bg-[#F1F1F1] py-2 px-6 rounded-[.2em] cursor-pointer`} onClick={() => setWebSite(undefined)}>VOLTAR</button>
                 </div>
             </div>

@@ -31,7 +31,7 @@ model Website {
 
   //Relações: 
   userID Int
-  User   User @relation(fields: [userID], references: [userID])
+  User   User @relation(fields: [userID], references: [userID], onDelete: Cascade, onUpdate: Cascade)
 
   linksExtract linksExtract[]
   webConfig    webConfig?
@@ -45,14 +45,14 @@ model webConfig {
   selectorTitle   String
   selectorContent String
   websiteID       Int     @unique
-  Website         Website @relation(fields: [websiteID], references: [websiteID])
+  Website         Website @relation(fields: [websiteID], references: [websiteID], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model linksExtract {
   linkID      Int          @id @unique @default(autoincrement())
   link        String       @unique
   websiteID   Int
-  website     Website      @relation(fields: [websiteID], references: [websiteID])
+  website     Website      @relation(fields: [websiteID], references: [websiteID], onDelete: Cascade, onUpdate: Cascade)
   postCollect postCollect?
 }
 
@@ -62,7 +62,7 @@ model postCollect {
   title         String
   content       String
   linkExtractID Int          @unique
-  linksExtract  linksExtract @relation(fields: [linkExtractID], references: [linkID])
+  linksExtract  linksExtract @relation(fields: [linkExtractID], references: [linkID], onDelete: Cascade, onUpdate: Cascade)
   postFinally   postFinally?
 }
 
@@ -75,8 +75,8 @@ model postFinally {
   featuredPost  String
 
   authorID Int  @unique
-  author   User @relation(fields: [authorID], references: [userID])
+  author   User @relation(fields: [authorID], references: [userID], onDelete: Cascade, onUpdate: Cascade)
 
   postCollectID Int         @unique
-  postCollect   postCollect @relation(fields: [postCollectID], references: [postCollectID])
+  postCollect   postCollect @relation(fields: [postCollectID], references: [postCollectID], onDelete: Cascade, onUpdate: Cascade)
 }

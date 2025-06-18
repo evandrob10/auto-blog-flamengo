@@ -35,7 +35,7 @@ export class ExtractLinks extends ContentResearcherService {
     await this.browserInit();
     await this.openPage(urlwebsite, {
       type: config[0].typeAwaitLoad,
-      value: config[0].selectAwaitLoad ? config[0].typeAwaitLoad : '',
+      value: config[0].selectAwaitLoad ? config[0].selectAwaitLoad : '',
     });
     try {
       if (urlwebsite) {
@@ -65,7 +65,7 @@ export class ExtractLinks extends ContentResearcherService {
         getlink: false,
       };
     } finally {
-      await this.closePage();
+      await this.closeBrowser();
     }
   }
 
@@ -76,5 +76,29 @@ export class ExtractLinks extends ContentResearcherService {
         link: url,
       },
     });
+  }
+
+  //pegar links pendentes por website
+  async getLinksPending(websiteID: number) {
+    return this.prisma.linksExtract.findMany({
+      where: {
+        websiteID: websiteID,
+        postCollect: null,
+      },
+    });
+  }
+
+  //Deleta os links pendentes:
+  async deleteLinksPending(websiteID: number) {
+    const allLinksPending = await this.getLinksPending(websiteID);
+    if (allLinksPending) {
+      for (const linksPending of allLinksPending) {
+        await this.prisma.linksExtract.delete({
+          where: {
+            linkID: linksPending.linkID,
+          },
+        });
+      }
+    }
   }
 }

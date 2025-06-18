@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 //Services
 import { WebsiteService } from './website.service';
 //DTO'S
@@ -40,5 +48,10 @@ export class WebsiteController {
     @Body() webConfig: updateWebConfig,
   ) {
     return this.WebsiteService.updateWebConfig(+websiteID, webConfig);
+  }
+
+  @Delete('/:websiteID')
+  deleteWebSite(@Param('websiteID') websiteID: string) {
+    return this.WebsiteService.deleteWebSite(+websiteID);
   }
 }

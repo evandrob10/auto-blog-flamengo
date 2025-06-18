@@ -11,6 +11,16 @@ export async function updateLinks(website: urlType | undefined) {
         },
         body: JSON.stringify(website),
       }
-    ).then(response => response.json());
+    ).then((response) => response.json());
   }
+}
+
+export async function deleteLinksPending(websiteID: number) {
+  return fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/content-researcher/${websiteID}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
 }

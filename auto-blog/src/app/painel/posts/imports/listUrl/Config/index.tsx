@@ -2,10 +2,12 @@
 import { SetStateAction, useCallback, useEffect, useState } from 'react';
 //interfaces:
 import { webConfig } from '@/api/web/interface';
-import { createWebConfig, getWebConfig, updateWebConfig } from '@/api/web';
+import { createWebConfig, deleteWebSite, getWebConfig, updateWebConfig } from '@/api/web';
+import Message from '@/app/painel/Components/Message';
 
 export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick: number, setWebSiteClick: React.Dispatch<SetStateAction<number | undefined>> }) {
 
+  const [message, setMessage] = useState<string>('');
   const [configExist, setConfigExist] = useState<boolean>(false);
   const [webConfig, setWebConfig] = useState<webConfig>({
     typeAwaitLoad: '',
@@ -41,15 +43,21 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
 
   const validConfig = () => {
     if (webConfig) {
-      if (!webConfig.typeAwaitLoad) return console.log('Você esqueceu de selecionar o tipo de espera!');
-      if (webConfig.typeAwaitLoad === 'selector' && !webConfig.selectAwaitLoad) return console.log('Você esqueceu preencher o seletor esperado!');
-      if (!webConfig.selectorPosts) return console.log('Faltou dizer o seletor dos posts');
-      if (!webConfig.selectorTitle) return console.log('Faltou dizer o seletor do titulo.');
-      if (!webConfig.selectorContent) return console.log('Faltou dizer o seletor do conteudo.');
+      if (!webConfig.typeAwaitLoad) return setMessage('Você esqueceu de selecionar o tipo de espera!');
+      if (webConfig.typeAwaitLoad === 'selector' && !webConfig.selectAwaitLoad) return setMessage('Você esqueceu preencher o seletor esperado!');
+      if (!webConfig.selectorPosts) return setMessage('Faltou dizer o seletor dos posts');
+      if (!webConfig.selectorTitle) return setMessage('Faltou dizer o seletor do titulo.');
+      if (!webConfig.selectorContent) return setMessage('Faltou dizer o seletor do conteudo.');
     }
 
     if (configExist) updateConfig()
     else saveConfig();
+    return setWebSiteClick(undefined);
+  }
+
+  const deleteWeb = async () => {
+    const response = await deleteWebSite(webSiteClick);
+    if (response) setWebSiteClick(undefined);
   }
 
   useEffect(() => {
@@ -63,7 +71,9 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
       <div className="w-[80%]">
         <div>
           <h2 className="mb-3 inline-block">Pagina:</h2>
-          <button className='float-right mr-1 bg-[#ED5684] px-2 rounded-2xl text-[#FFFF] hover:scale-110 cursor-pointer'>deletar</button>
+          {webSiteClick &&
+            <button className='float-right mr-1 bg-[#ED5684] px-2 rounded-2xl text-[#FFFF] hover:scale-110 cursor-pointer' onClick={deleteWeb}>deletar</button>
+          }
         </div>
         <div className="">
           <label htmlFor="loadPage">Tipo de espera:</label>
@@ -98,6 +108,7 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
           </div>
         </div>
       </div>
+      <Message msg={message} />
       <div className='w-full mt-6 flex flex-col justify-center items-center'>
         <button type='button' className='w-[50%] text-[18px] mb-2 mr-2 border-none bg-blue-600 py-2 px-4 rounded-2xl text-[#FFF] cursor-pointer' onClick={event => { event.preventDefault(); validConfig() }}>SALVAR</button>
         <button className='w-[50%] text-[18px] mb-2 mr-2 border-none bg-[#F1F1F1] py-2 px-4 rounded-2xl cursor-pointer' onClick={() => setWebSiteClick(undefined)}>VOLTAR</button>

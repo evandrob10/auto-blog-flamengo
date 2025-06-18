@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 //Service
 import { ContentResearcherService } from './services/content-researcher.service';
 import { ExtractPosts } from './services/extract-posts/extract-posts.content.service';
@@ -15,6 +15,11 @@ export class ContentResearcherController {
   @Patch('/update-links')
   updateLinks(@Body() dataWebSite: { websiteID: number; urlwebsite: string }) {
     return this.ExtractLinks.extractLinksPosts(dataWebSite);
+  }
+
+  @Delete('/:websiteID')
+  deleteLinksPending(@Param('websiteID') websiteID: string) {
+    return this.ExtractLinks.deleteLinksPending(+websiteID);
   }
 
   @Patch('/update-posts')

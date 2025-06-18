@@ -46,7 +46,13 @@ export class WebsiteService {
     });
   }
 
-  async updateWebSite(url: string) {}
+  async deleteWebSite(websiteID: number) {
+    return await this.prisma.website.delete({
+      where: {
+        websiteID: websiteID,
+      },
+    });
+  }
 
   async updateWebConfig(websiteID: number, webConfig: updateWebConfig) {
     return await this.prisma.webConfig.update({
