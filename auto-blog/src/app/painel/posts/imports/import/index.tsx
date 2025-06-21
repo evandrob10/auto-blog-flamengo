@@ -101,7 +101,7 @@ export default function Import({ website, setWebSite }: WebSite) {
                     </div>
                 }
                 <div className="mt-6 flex flex-col justify-center items-center">
-                    {extractData ? <p className='animate-ping'>Carregando...</p> : <button onClick={extract} className={`mb-3 border-none bg-blue-600 py-2 px-6 rounded-[.2em] text-[#FFF] cursor-pointer`}>EXTRAIR POSTS</button>}
+                    {extractData ? <p className='animate-ping'>Carregando...</p> : quantityPostsPending ? <button onClick={extract} className={`mb-3 border-none bg-blue-600 py-2 px-6 rounded-[.2em] text-[#FFF] cursor-pointer`}>EXTRAIR POSTS</button> : ''}
                     <button className={`${extractData && 'hidden'} w-[40%] border-none bg-[#F1F1F1] py-2 px-6 rounded-[.2em] cursor-pointer`} onClick={() => setWebSite(undefined)}>VOLTAR</button>
                 </div>
             </div>
