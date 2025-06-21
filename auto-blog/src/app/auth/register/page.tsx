@@ -27,10 +27,11 @@ export default function Register() {
     async function registerUser() {
         const response = checkData()
         if (response && dataUser) {
-            createUser(dataUser);
+            await createUser(dataUser);
             setMessage('Cadastrado com sucesso!');
-            await auth(dataUser.email, dataUser.password);
-            setTimeout(() => redirect('/painel'), 2000)
+            const response: {access: boolean} = await auth(dataUser.email, dataUser.password);
+            if(response.access) setTimeout(() => redirect('/painel'), 2000)
+            else setMessage('Ocorreu um erro ao cadastrar o usuario!');
         }
     }
 
