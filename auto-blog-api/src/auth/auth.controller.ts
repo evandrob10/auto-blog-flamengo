@@ -12,13 +12,17 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const token = await this.AuthService.auth(email, password);
-    if (token)
+    if (token) {
       res.cookie('token', token, {
         httpOnly: true,
         sameSite: 'lax',
       });
+      return {
+        access: true,
+      };
+    }
     return {
-      access: 'autorizado!',
+      access: false,
     };
   }
   @Post('/verifyToken')

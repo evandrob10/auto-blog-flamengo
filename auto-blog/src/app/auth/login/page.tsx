@@ -1,10 +1,12 @@
 'use client';
-import { auth } from "@/api/Auth";
+
 import Link from "next/link";
 import { useState } from "react";
-import Message from "../Components/Message";
 import { redirect } from "next/navigation";
-
+//API
+import { auth } from "@/api/Auth";
+//COMPONENTS
+import Message from "../Components/Message";
 
 export default function Login() {
 
@@ -12,16 +14,21 @@ export default function Login() {
     const [email, setEmail] = useState<string>();
     const [password, setPassword] = useState<string>();
 
-    async function authLogin(email: string, password: string) {
-       return await auth(email, password);
+    //Envia os dados do login para authenticação:
+    async function authLogin(email: string, password: string): Promise<{ access: boolean }> {
+        return await auth(email, password);
     }
-
+    //Valida o login e redireciona:
     async function checkLogin(): Promise<boolean | void> {
         if (!email) return setMessage('Você esqueceu de preencher o email!');
         if (!password) return setMessage('Você esqueceu de preencher a senha!');
-        const response = await authLogin(email, password);
-        if(response) setMessage('Logado com sucesso!');
-        setTimeout(()=> redirect('/painel'), 2000);
+        const response: { access: boolean } = await authLogin(email, password);
+        if (response.access) {
+            setMessage('Logado com sucesso!');
+            setTimeout(() => redirect('/painel'), 2000);
+            return;
+        }
+        if (!response.access) return setMessage('Login ou senha inválida!');
     }
 
     return (
@@ -39,7 +46,7 @@ export default function Login() {
                             <input className="p-1 border-1 w-full rounded-[.3em]" type="password" id="password" placeholder="******" onChange={event => setPassword(event.target.value)} />
                         </div>
                     </div>
-                    <Message msg={message}  />
+                    <Message msg={message} />
                     <div>
                         <button className="text-[#FFFFFF] py-1 w-full bg-[#ED5684] rounded-[.3em]" onClick={checkLogin}>ENTRAR</button>
                     </div>

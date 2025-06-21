@@ -18,7 +18,7 @@ export async function auth(email: string, password: string) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ email, password }),
-  });
+  }).then(response => response.json());
 }
 export async function verifyToken() {
   return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verifyToken`, {
@@ -30,7 +30,6 @@ export async function verifyToken() {
   }).then((response) => response.json());
 }
 export async function logout() {
-  console.log('chamou');
   return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,{
     method: 'POST',
     credentials: 'include',
