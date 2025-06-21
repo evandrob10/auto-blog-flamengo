@@ -5,5 +5,6 @@ export class CreateConfigDto {
   selectorPosts: string;
   selectorTitle: string;
   selectorContent: string;
+  selectorDateTime: string | null;
   websiteID: number;
 }

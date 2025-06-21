@@ -22,7 +22,7 @@ model User {
   password  String
 
   Website     Website[]
-  postFinally postFinally?
+  postFinally postFinally[]
 }
 
 model Website {
@@ -38,14 +38,15 @@ model Website {
 }
 
 model webConfig {
-  webConfigID     Int     @id @unique @default(autoincrement())
-  typeAwaitLoad   String
-  selectAwaitLoad String?
-  selectorPosts   String
-  selectorTitle   String
-  selectorContent String
-  websiteID       Int     @unique
-  Website         Website @relation(fields: [websiteID], references: [websiteID], onDelete: Cascade, onUpdate: Cascade)
+  webConfigID      Int     @id @unique @default(autoincrement())
+  typeAwaitLoad    String
+  selectAwaitLoad  String?
+  selectorPosts    String
+  selectorTitle    String
+  selectorContent  String
+  selectorDateTime String?
+  websiteID        Int     @unique
+  Website          Website @relation(fields: [websiteID], references: [websiteID], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model linksExtract {
@@ -57,10 +58,10 @@ model linksExtract {
 }
 
 model postCollect {
-  postCollectID Int          @id @unique @default(autoincrement())
-  dateTime      DateTime?
+  postCollectID Int @id @unique @default(autoincrement())
   title         String
   content       String
+  dateTime      String?
   linkExtractID Int          @unique
   linksExtract  linksExtract @relation(fields: [linkExtractID], references: [linkID], onDelete: Cascade, onUpdate: Cascade)
   postFinally   postFinally?
@@ -74,7 +75,7 @@ model postFinally {
   keywords      String
   featuredPost  String
 
-  authorID Int  @unique
+  authorID Int
   author   User @relation(fields: [authorID], references: [userID], onDelete: Cascade, onUpdate: Cascade)
 
   postCollectID Int         @unique

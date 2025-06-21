@@ -15,6 +15,7 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
     selectorPosts: '',
     selectorTitle: '',
     selectorContent: '',
+    selectorDateTime: null,
     websiteID: webSiteClick,
   })
 
@@ -105,6 +106,10 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
           <div>
             <label htmlFor="content">Seletor conteúdo:</label>
             <input id="content" value={webConfig?.selectorContent ? webConfig?.selectorContent : webConfig?.selectorContent} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorContent: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id"' />
+          </div>
+          <div>
+            <label htmlFor="content">Seletor data:</label>
+            <input id="content" value={webConfig?.selectorDateTime ? webConfig?.selectorDateTime : ''} onChange={event => setWebConfig(prev => prev ? ({ ...prev, selectorDateTime: event.target.value as string }) : prev)} className='my-2 py-1 px-2 border-1 w-[100%]' type='text' placeholder='Exemplo: ".class", "div", "#id". (opcional)' />
           </div>
         </div>
       </div>

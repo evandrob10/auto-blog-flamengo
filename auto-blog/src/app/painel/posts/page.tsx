@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Post } from "@/api/posts/interface";
 import { generationPosts, posts as ListPost } from "@/api/posts"
 import { useCallback, useEffect, useState } from "react";
+import { verifyToken } from "@/api/Auth";
 
 export default function Posts() {
 
@@ -10,14 +11,16 @@ export default function Posts() {
     const [listPosts, setLisPosts] = useState<Post[]>();
 
     const updateListPost = useCallback(async () => {
-        const update = await ListPost();
+        const user = await verifyToken();
+        const update = user.userID && await ListPost(user.userID);
         if (update) setLisPosts(update);
         else setMessage('Error ao atualizar os posts!');
     }, [])
 
     const createPost = async () => {
         setMessage('');
-        const { quantity } = await generationPosts();
+        const user = await verifyToken();
+        const { quantity } = user.userID && await generationPosts(user.userID);
         if (quantity) {
             await updateListPost();
             setMessage(`Foram adicionado ${quantity} com sucesso!.`);

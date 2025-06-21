@@ -35,14 +35,7 @@ export class WebsiteService {
 
   async createWebConfig(webConfig: CreateConfigDto) {
     return await this.prisma.webConfig.create({
-      data: {
-        websiteID: webConfig.websiteID,
-        selectAwaitLoad: webConfig.selectAwaitLoad,
-        selectorPosts: webConfig.selectorPosts,
-        selectorContent: webConfig.selectorContent,
-        selectorTitle: webConfig.selectorTitle,
-        typeAwaitLoad: webConfig.typeAwaitLoad,
-      },
+      data: webConfig,
     });
   }
 
@@ -59,14 +52,7 @@ export class WebsiteService {
       where: {
         websiteID: websiteID,
       },
-      data: {
-        websiteID: webConfig.websiteID,
-        selectAwaitLoad: webConfig.selectAwaitLoad,
-        selectorPosts: webConfig.selectorPosts,
-        selectorContent: webConfig.selectorContent,
-        selectorTitle: webConfig.selectorTitle,
-        typeAwaitLoad: webConfig.typeAwaitLoad,
-      },
+      data: webConfig,
     });
   }
 

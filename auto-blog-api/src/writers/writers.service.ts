@@ -89,7 +89,7 @@ export class WritersService {
     });
   }
 
-  async postFinallyInit() {
+  async postFinallyInit(userID: number) {
     const postCollect = await this.prisma.postCollect.findMany({});
     let count = 0;
     if (postCollect) {
@@ -99,7 +99,7 @@ export class WritersService {
         );
         if (count > 1) break;
         if (checkPost) continue;
-        await this.registerPost(1, post.content, post.postCollectID);
+        await this.registerPost(userID, post.content, post.postCollectID);
         count += 1;
       }
     }

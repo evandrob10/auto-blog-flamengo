@@ -1,12 +1,12 @@
 import { Post } from "./interface";
 
-export async function posts(): Promise<Post[]> {
-  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-posts`).then(
+export async function posts(userID: number): Promise<Post[]> {
+  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/all-posts/${userID}`).then(
     (response) => response.json()
   );
 }
-export async function generationPosts() {
-  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/writers`, {
+export async function generationPosts(userID: number) {
+  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/writers/${userID}`, {
     method: "POST",
   }).then((response) => response.json());
 }

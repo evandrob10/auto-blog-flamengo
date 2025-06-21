@@ -5,5 +5,6 @@ export interface webConfig{
   selectorPosts: string;
   selectorTitle: string;
   selectorContent: string;
+  selectorDateTime?: string | null;
   websiteID: number;
 }

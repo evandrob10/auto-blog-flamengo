@@ -4,8 +4,11 @@ import { PrismaClientService } from './prisma-client/prisma-client.service';
 @Injectable()
 export class AppService {
   constructor(private readonly prisma: PrismaClientService) {}
-  async getAllPosts() {
+  async getAllPosts(userID: number) {
     return await this.prisma.postFinally.findMany({
+      where: {
+        authorID: userID,
+      },
       orderBy: { postFinallyID: 'desc' },
     });
   }

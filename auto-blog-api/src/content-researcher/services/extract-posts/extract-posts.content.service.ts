@@ -4,6 +4,7 @@ import { WebsiteService } from 'src/website/website.service';
 import { WritersService } from 'src/writers/writers.service';
 import { ContentResearcherService } from '../content-researcher.service';
 import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
+import { PostsDto } from './dto/posts.dto';
 
 @Injectable()
 export class ExtractPosts extends ContentResearcherService {
@@ -22,15 +23,11 @@ export class ExtractPosts extends ContentResearcherService {
     });
   }
 
+  //Função responsavel extrair os posts:
   async extractPosts(websiteID: number) {
-    const config = await this.WebsiteService.getWebConfig(websiteID);
+    const config = await this.WebsiteService.getWebConfig(websiteID); // Pegar configuração de extração salva da url.
     if (config.length) {
-      const newPosts: {
-        postCollectID: number;
-        title: string;
-        content: string;
-        linkExtractID: number;
-      }[] = [];
+      const newPosts: PostsDto[] = [];
       if (websiteID) {
         await this.browserInit();
         //Pegar todos os links:
@@ -62,11 +59,22 @@ export class ExtractPosts extends ContentResearcherService {
                   return content;
                 },
               );
+
+              //Coleta a da do post:
+              let dataTime: string | null = null;
+              if (config[0].selectorDateTime) {
+                dataTime = await this.page.$eval(
+                  config[0].selectorDateTime,
+                  (el) => el.innerHTML,
+                );
+              }
+
               //Cria o post:
               const response = await this.createPost(
                 linkPost.linkID,
                 title,
                 content,
+                dataTime,
               );
               newPosts.push(response);
             } catch {
@@ -81,12 +89,18 @@ export class ExtractPosts extends ContentResearcherService {
     }
   }
 
-  async createPost(linkExtractID: number, title: string, content: string) {
+  async createPost(
+    linkExtractID: number,
+    title: string,
+    content: string,
+    dateTime?: string | null,
+  ) {
     return await this.prisma.postCollect.create({
       data: {
         linkExtractID: linkExtractID,
         title: title,
         content: content,
+        dateTime: dateTime ? dateTime : null,
       },
     });
   }

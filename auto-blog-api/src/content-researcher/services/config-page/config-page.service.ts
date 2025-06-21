@@ -62,7 +62,7 @@ export class ConfigPage {
       if (selector) {
         switch (selector.type) {
           case 'selector':
-            await this.page.waitForSelector(selector.value);
+            await this.page.waitForSelector(selector.value, { timeout: 60000 });
             break;
         }
       } else {
