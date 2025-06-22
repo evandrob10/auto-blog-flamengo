@@ -67,7 +67,7 @@ export default function Config({ webSiteClick, setWebSiteClick }: { webSiteClick
 
 
   return (
-    <section className="w-[95%] flex flex-col items-center">
+    <section className="w-[95%] flex flex-col items-center sm:w-[670px]">
       <h1 className="mb-4">Configuração de importação</h1>
       <div className="w-[80%]">
         <div>
