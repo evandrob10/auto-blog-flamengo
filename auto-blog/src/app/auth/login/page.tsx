@@ -48,7 +48,7 @@ export default function Login() {
                     </div>
                     <Message msg={message} />
                     <div>
-                        <button className="text-[#FFFFFF] py-1 w-full bg-[#ED5684] rounded-[.3em]" onClick={checkLogin}>ENTRAR</button>
+                        <button className="text-[#FFFFFF] py-1 w-full bg-[#ED5684] rounded-[.3em] cursor-pointer hover:scale-105" onClick={checkLogin}>ENTRAR</button>
                     </div>
                     <div className="flex justify-between items-center my-3">
                         <hr className="w-[45%] inline-block" />
@@ -56,7 +56,7 @@ export default function Login() {
                         <hr className="w-[45%] inline-block" />
                     </div>
                     <div className="text-center">
-                        <p className="text-[14px] ">Precisa de uma conta? <Link href={'/auth/register'} className="underline">Cadastre-se</Link></p>
+                        <p className="text-[14px]">Precisa de uma conta? <Link href={'/auth/register'} className="underline cursor-pointer">Cadastre-se</Link></p>
                     </div>
                 </div>
             </div>
