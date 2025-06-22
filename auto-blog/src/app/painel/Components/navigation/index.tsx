@@ -28,6 +28,7 @@ export default function Navigation() {
     ]
     const handlerOpenNav = () => setOpenNav(prev => prev ? false : true);
     useEffect(() => {
+        verifyToken();
         const interval = setInterval(verifyToken, 8000);
         return () => clearInterval(interval);
     }, [])
