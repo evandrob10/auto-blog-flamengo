@@ -87,10 +87,10 @@ export default function Import({ website, setWebSite }: WebSite) {
     }
 
     return (
-        <div className=' xl:w-[50%] xl:h-screen'>
+        <div className=' xl:w-[1024px] xl:h-screen'>
             <div className="text-center text-[16px] xl:flex xl:flex-col xl:justify-evenly xl:h-[50%]">
                 <h2 className="text-[#000] mb-5">URL: {website.urlwebsite}</h2>
-                <div className="flex flex-col items-center justify-center xl:mx-auto xl:flex-row xl:w-[80%] xl:justify-evenly">
+                <div className="flex flex-col items-center justify-center md:mx-auto md:flex-row md:w-full md:justify-evenly">
                     <Card quantity={quantityPosts} text='TOTAL LINKS' extract={extractLinks} />
                     <Card quantity={quantityPostCollect} text='QUANTIDADE POSTS EXTRAIDOS' />
                     <Card quantity={quantityPostsPending} text='QUANTIDADE PENDENTE' dLinksPending={dLinksPending} />
