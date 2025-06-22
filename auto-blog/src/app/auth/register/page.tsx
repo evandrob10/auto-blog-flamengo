@@ -37,7 +37,7 @@ export default function Register() {
 
     return (
         <section className="text-[#6d6969] flex h-screen justify-center items-center bg-[#6D9AC4]">
-            <div className="bg-[#FFFFFF] py-[10%] w-[90%] rounded-[.3em] flex items-center justify-center">
+            <div className="bg-[#FFFFFF] py-15 w-[90%] rounded-[.3em] flex items-center justify-center md:w-[670px]">
                 <div className="w-[80%] h-[80%]">
                     <h1 className="text-[21px] mb-3">CADASTRO</h1>
                     <div>
