@@ -39,20 +39,20 @@ export default function Navigation() {
 
     return (
         <header className={`bg-[#ED5684] min-h-[8vh] relative`}>
-            <div className={`flex justify-center items-center h-[8vh] cursor-pointer overflow-hidden ${openNav && 'hidden'}`}>
+            <div className={`flex justify-center items-center h-[8vh] cursor-pointer overflow-hidden ${openNav && 'hidden'} md:hidden`}>
                 <div className="hover:scale-110" onClick={handlerOpenNav}>
                     <div className="bg-[#FFFFFF] h-[5px] w-[40px]"></div>
                     <div className="bg-[#FFFFFF] h-[5px] w-[40px] my-1"></div>
                     <div className="bg-[#FFFFFF] h-[5px] w-[40px]"></div>
                 </div>
             </div>
-            <nav className={`absolute bg-[#ED5684] w-screen h-screen ${!openNav && 'hidden'} z-10 `}>
-                <div className="flex justify-center items-center min-h-[8vh]">
+            <nav className={`absolute bg-[#ED5684] w-screen h-screen ${!openNav && 'max-md:hidden'} z-10 md:static md:h-[8vh] md:flex  md:justify-center md:items-center`}>
+                <div className="flex justify-center items-center min-h-[8vh] md:hidden">
                     <p className="text-[#FFFFFf] border-1 px-2 rounded-full text-2xl cursor-pointer hover:scale-110" onClick={handlerOpenNav}>X</p>
                 </div>
-                <ul className='mx-auto h-[92vh] flex flex-col justify-center items-center  py-2 text-[#FFF] sm:w-[40%]'>
+                <ul className='mx-auto h-[92vh] flex flex-col justify-center items-center  py-2 text-[#FFF] sm:w-[40%] md:h-[8vh] md:flex-row md:justify-center md:py-0'>
                     {itemsNav && itemsNav.map((element, index) => (
-                        <Link onClick={() => { if (element.name === 'sair') handlerLogout(); handlerOpenNav() }} key={index} href={element.path} className="mb-5 text-2xl hover:scale-110">{(element.name.toUpperCase())}</Link>
+                        <Link onClick={() => { if (element.name === 'sair') handlerLogout(); handlerOpenNav() }} key={index} href={element.path} className="mb-5 text-2xl hover:scale-110 md:mb-0 md:mr-15">{(element.name.toUpperCase())}</Link>
                     ))}
                 </ul>
             </nav>
