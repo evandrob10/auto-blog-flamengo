@@ -54,8 +54,24 @@ export default function Posts() {
                 {listPosts && listPosts.length ?
                     <div className="self-start flex flex-wrap">
                         {listPosts.map((element) => (
-                            <div key={element.postFinallyID} className="border-1 mb-2 sm:max-w-[48%] mx-[1%] p-2" >
-                                <h3 className="font-bold">{element.title}</h3>
+                            <div key={element.postFinallyID} className="border-1 border-[#cecbcbd1] rounded-[.3em] mb-2 sm:max-w-[48%] sm:mb-5 mx-[1%] p-2" >
+                                <div className="float-right">
+                                    <Image 
+                                        width={25}
+                                        height={25}
+                                        src={'/icons/edit.svg'}
+                                        alt="Editar postagem"
+                                        className="cursor-pointer hover:scale-120 mr-1"
+                                    />
+                                </div>
+                                <Image 
+                                    width={1280}
+                                    height={720}
+                                    src={'/posts/tailwindcss-1633184775.jpg'}
+                                    alt={element.title}
+                                    className="w-full object-cover"
+                                />
+                                <h3 className="font-bold my-2">{element.title}</h3>
                                 <p>{element.summary}</p>
                             </div>
                         ))}
