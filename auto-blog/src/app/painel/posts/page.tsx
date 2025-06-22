@@ -33,8 +33,8 @@ export default function Posts() {
     }, [updateListPost])
 
     return (
-        <section className="w-full bg-[#FFFFFF]">
-            <section className="flex items-center justify-between relative mb-2">
+        <section className="w-full bg-[#FFFFFF] xl:w-[1280px]">
+            <section className="flex items-center justify-between relative mb-2 md:px-2 lg:px-4">
                 <button onClick={createPost} className="text-[18px] mb-2 mr-2 border-none bg-blue-600 w-[50px] h-[25px] rounded-full text-[#FFF] cursor-pointer">+</button>
                 <h1 className="py-2">POSTAGENS</h1>
                 <div>
