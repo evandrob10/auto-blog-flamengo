@@ -88,7 +88,7 @@ export default function Import({ website, setWebSite }: WebSite) {
 
     return (
         <div className=' xl:w-[1024px] xl:h-screen'>
-            <div className="text-center text-[16px] xl:flex xl:flex-col xl:justify-evenly xl:h-[50%]">
+            <div className="text-center text-[16px] md:flex md:flex-col md:justify-evenly md:h-[80%]">
                 <h2 className="text-[#000] mb-5">URL: {website.urlwebsite}</h2>
                 <div className="flex flex-col items-center justify-center md:mx-auto md:flex-row md:w-full md:justify-evenly">
                     <Card quantity={quantityPosts} text='TOTAL LINKS' extract={extractLinks} />
@@ -101,8 +101,8 @@ export default function Import({ website, setWebSite }: WebSite) {
                     </div>
                 }
                 <div className="mt-6 flex flex-col justify-center items-center">
-                    {extractData ? <p className='animate-ping'>Carregando...</p> : quantityPostsPending ? <button onClick={extract} className={`mb-3 border-none bg-blue-600 py-2 px-6 rounded-[.2em] text-[#FFF] cursor-pointer`}>EXTRAIR POSTS</button> : ''}
-                    <button className={`${extractData && 'hidden'} w-[40%] border-none bg-[#F1F1F1] py-2 px-6 rounded-[.2em] cursor-pointer`} onClick={() => setWebSite(undefined)}>VOLTAR</button>
+                    {extractData ? <p className='animate-ping'>Carregando...</p> : quantityPostsPending ? <button onClick={extract} className={`w-[80%] sm:w-[60%] md:w-[40%] mb-3 border-none bg-blue-600 py-2 px-6 rounded-[.2em] text-[#FFF] cursor-pointer`}>EXTRAIR POSTS</button> : ''}
+                    <button className={`${extractData && 'hidden'} w-[80%] sm:w-[60%] md:w-[40%] border-none bg-[#F1F1F1] py-2 px-6 rounded-[.2em] cursor-pointer`} onClick={() => setWebSite(undefined)}>VOLTAR</button>
                 </div>
             </div>
         </div>
