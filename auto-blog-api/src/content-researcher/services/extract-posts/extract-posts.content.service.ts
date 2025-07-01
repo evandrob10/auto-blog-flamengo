@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 //Services
 import { WebsiteService } from 'src/website/website.service';
-import { WritersService } from 'src/writers/writers.service';
 import { ContentResearcherService } from '../content-researcher.service';
 import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
 import { PostsDto } from './dto/posts.dto';
@@ -10,10 +9,9 @@ import { PostsDto } from './dto/posts.dto';
 export class ExtractPosts extends ContentResearcherService {
   constructor(
     prisma: PrismaClientService,
-    WritersService: WritersService,
     private readonly WebsiteService: WebsiteService,
   ) {
-    super(prisma, WritersService);
+    super(prisma);
   }
 
   //Checar post/link

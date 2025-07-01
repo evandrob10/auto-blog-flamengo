@@ -46,7 +46,7 @@ export default function Navigation() {
                     <div className="bg-[#FFFFFF] h-[5px] w-[40px]"></div>
                 </div>
             </div>
-            <nav className={`absolute bg-[#ED5684] w-screen h-screen ${!openNav && 'max-md:hidden'} z-10 md:static md:h-[8vh] md:flex  md:justify-center md:items-center`}>
+            <nav className={`absolute bg-[#ED5684] w-screen h-screen ${!openNav && 'max-md:hidden'} z-20 md:static md:h-[8vh] md:flex  md:justify-center md:items-center`}>
                 <div className="flex justify-center items-center min-h-[8vh] md:hidden">
                     <p className="text-[#FFFFFf] border-1 px-2 rounded-full text-2xl cursor-pointer hover:scale-110" onClick={handlerOpenNav}>X</p>
                 </div>

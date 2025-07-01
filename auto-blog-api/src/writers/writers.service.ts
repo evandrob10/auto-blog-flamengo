@@ -4,107 +4,182 @@ import { genkit } from 'genkit';
 import { googleAI, gemini } from '@genkit-ai/googleai';
 //prisma
 import { PrismaClientService } from '../prisma-client/prisma-client.service';
-import { PostFinallyType } from './dto/CreatePostFinally.dto';
+import { ContentResearcherService } from 'src/content-researcher/services/content-researcher.service';
 
 @Injectable()
 export class WritersService {
-  constructor(private readonly prisma: PrismaClientService) {}
+  constructor(
+    private readonly prisma: PrismaClientService,
+    private readonly ResearcherService: ContentResearcherService,
+  ) {}
 
   private ia = genkit({
     plugins: [googleAI({ apiKey: process.env.GEMINI_API_KEY })],
     model: gemini('gemini-1.5-flash'),
   });
-  async createContent(prompt: string) {
-    const { text } = await this.ia.generate({
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              text: 'Você é um especialista brasileiro em escrever artigos para blog. Pesquise tudo sobre artigo para blog, Como aplicar SEO(estrutura e tudo mais).',
-            },
-          ], // Include the large text as context
-        },
-      ],
-      prompt: prompt,
-    });
-    return {
-      text,
-    };
-  }
+  async createContent(prompt: string, content?: string[], websiteID?: number) {
+    if (websiteID) {
+      const contentBasic = await this.contentCollect(websiteID);
 
-  filterPrompt(textBasic: string, sectionPost: string): string | null {
-    switch (sectionPost) {
-      case 'main':
-        return `Com base, pegue o seguinte texto: "${textBasic}" rescreva com seu conhecimento, evitando direito autorais. Com no minimo 900 palavras. Caso tenha acesso vá na internet e pesquise além da base(apenas um texto não varios pfv e só texto não precisa de explicação. Não use *, ## ou # ) os sub titulo coloque h2 e h3`;
-      case 'title':
-        return `Com base no seguinte texto: "${textBasic}" e no seu conhecimento, crie um titulo(apenas um titulo não varios pfv e só titulo não precisa de explicação. Não use * ou #). `;
-      case 'keywords':
-        return `Com base no seguinte texto: "${textBasic}" e no seu conhecimento, crie um array com palavras chaves encontradas.(apenas um array não varios pfv e só array não precisa de explicação ou coloca javascript. Não use * ou #) `;
-      case 'summary':
-        return `Com base no seguinte texto: "${textBasic}" e no seu conhecimento, crie um resumo para aparecer na hora da busca do usuario no google aquele que fica em baixo title. (apenas um resumo não varios pfv e só resumo não precisa de explicação. Não use * ou #)`;
-      default:
-        return null;
-    }
-  }
-
-  async registerPost(
-    authorID: number,
-    textBasic: string,
-    postCollectID: number,
-  ) {
-    const mainPrompt = this.filterPrompt(textBasic, 'main');
-    const main = mainPrompt && (await this.createContent(mainPrompt)).text;
-    const mainTitle = main && this.filterPrompt(main, 'title');
-    const mainKeywords = main && this.filterPrompt(main, 'keywords');
-    const mainSummary = main && this.filterPrompt(main, 'summary');
-    const title = mainTitle && (await this.createContent(mainTitle)).text;
-    const keywords =
-      mainKeywords && (await this.createContent(mainKeywords)).text;
-    const summary = mainSummary && (await this.createContent(mainSummary)).text;
-
-    if (title && main && keywords && summary) {
-      return await this.prisma.postFinally.create({
-        data: {
-          title: title,
-          content: main,
-          summary: summary,
-          keywords: keywords,
-          authorID: authorID,
-          featuredPost: '',
-          postCollectID: postCollectID,
-        },
+      const { text } = await this.ia.generate({
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                text: 'Estude tudo sobre SEO, Artigos, palavras-chaves, densidade de palavras chaves e outros.',
+              },
+            ],
+          },
+          {
+            role: 'user',
+            content: content ? content : contentBasic,
+          },
+        ],
+        prompt: prompt,
       });
+      return {
+        text,
+      };
     }
     return {
-      error: 'ocorreu erro ao tentar criar o post!',
+      message: 'error ao gerar conteúdo!',
     };
   }
 
-  async checkPostFinally(
-    postCollectID: number,
-  ): Promise<PostFinallyType | null> {
-    return await this.prisma.postFinally.findUnique({
-      where: { postCollectID: postCollectID },
-    });
+  async promptKeyWord(context: string) {
+    if (context) {
+      return this.createContent(
+        `Com base no ${context}, crie uma palavra-chave`,
+      );
+    }
+    return this.createContent(
+      'Com base nos textos anteriores, crie uma palavra-chave',
+    );
   }
 
-  async postFinallyInit(userID: number) {
-    const postCollect = await this.prisma.postCollect.findMany({});
-    let count = 0;
-    if (postCollect) {
-      for (const post of postCollect) {
-        const checkPost: PostFinallyType | null = await this.checkPostFinally(
-          post.postCollectID,
-        );
-        if (count > 1) break;
-        if (checkPost) continue;
-        await this.registerPost(userID, post.content, post.postCollectID);
-        count += 1;
-      }
+  async promptThema(keyWord: string) {
+    return await this.createContent(
+      `Crie um tema com a palavra-chave: ${keyWord}. retorne apenas o tema, Exemplo: “Como plantar suculentas em casa”`,
+    );
+  }
+
+  async promptContent(
+    thema: string,
+    callAction: string,
+    ToneOfVoice: string,
+    targetAudience: string,
+    SecondaryKeywords: string[],
+    links: string[],
+  ) {
+    //Links:
+    let contentLink: string = '';
+    if (links.length) {
+      for (const link of links) contentLink += `${link}, `;
     }
-    return {
-      quantity: count,
-    };
+    //Palavras chaves secundarias:
+    let Keywords: string = '';
+    if (SecondaryKeywords.length) {
+      for (const Keyword of SecondaryKeywords) Keywords += `${Keyword}, `;
+    }
+
+    return this.createContent(
+      `Com os textos, crie um artigo completo, bem estruturado e otimizado para SEO com base nas seguintes diretrizes:
+      
+      1. Tema Principal:
+      ${thema};
+      Exemplo: “Como plantar suculentas em casa”
+
+      2. Estrutura do Artigo:
+
+      Título Principal (H1): Atraente e com a palavra-chave principal.
+
+      Introdução: Breve parágrafo introdutório que contextualiza o tema, inclui a palavra-chave principal e estimula o leitor a continuar lendo.
+
+      Subtítulos (H2, H3): Organize o conteúdo com subtítulos relevantes. Utilize palavras-chave secundárias e sinônimos.
+
+      Parágrafos Curtos: Linguagem clara, objetiva e de fácil leitura. Use listas, negrito e exemplos, se necessário.
+
+      Uso Estratégico de Palavras-chave: Distribua a palavra-chave principal e secundárias de forma natural ao longo do texto (densidade ideal: 1% a 2%).
+
+      Conteúdo Original e de Valor: Traga informações úteis, completas e confiáveis. Evite conteúdo superficial ou duplicado.
+
+      Call to Action (CTA): Encerre com um convite à ação: ${callAction} (ex: comentar, compartilhar, comprar, assinar). 
+
+      3. Público-alvo:
+      [Defina o público-alvo: ${targetAudience} ex. iniciantes, profissionais, curiosos, etc.]
+
+      4. Tom de Voz: ${ToneOfVoice}
+      [Ex: informal, técnico, didático, inspirador, profissional...]
+      
+      ${
+        Keywords && '5. Palavras-chave secundárias (opcional): ' + Keywords
+      }     
+      ${contentLink && 'inclua de form dinamica ao decorrer do texto os seguintes links ' + contentLink}
+      `,
+    );
+  }
+
+  async promptMetaDescription(content: string) {
+    return await this.createContent(
+      `Com base no texto: ${content}, Crie uma meta Descrição (até 160 caracteres): Resumo atrativo do artigo contendo a palavra-chave.`,
+    );
+  }
+
+  async contentCollect(websiteID: number) {
+    const posts = await this.ResearcherService.getAllposts(websiteID);
+    const newPosts = posts
+      .filter((post) => post.postCollect !== null)
+      .map((post, index) => {
+        return {
+          text: `texto ${index + 1}: Titulo : ${post.postCollect?.title} conteudo: ${post.postCollect?.content} data de publicação: ${post.postCollect?.dateTime}`,
+        };
+      });
+    return newPosts;
   }
 }
+/* 
+Aqui está um prompt que você pode usar (ou adaptar) para treinar um modelo — ou orientar a si mesmo ou uma IA — a criar artigos completos otimizados para SEO:
+
+📝 Prompt para Criar Artigos Completos Otimizados para SEO
+Instruções:
+
+1. Tema Principal: - Ok
+[Insira aqui o tema principal ou palavra-chave foco do artigo]
+Exemplo: “Como plantar suculentas em casa”
+
+2. Estrutura do Artigo: - OK
+
+Título Principal (H1): Atraente e com a palavra-chave principal.
+
+Introdução: Breve parágrafo introdutório que contextualiza o tema, inclui a palavra-chave principal e estimula o leitor a continuar lendo.
+
+Subtítulos (H2, H3): Organize o conteúdo com subtítulos relevantes. Utilize palavras-chave secundárias e sinônimos.
+
+Parágrafos Curtos: Linguagem clara, objetiva e de fácil leitura. Use listas, negrito e exemplos, se necessário.
+
+Uso Estratégico de Palavras-chave: Distribua a palavra-chave principal e secundárias de forma natural ao longo do texto (densidade ideal: 1% a 2%).
+
+Conteúdo Original e de Valor: Traga informações úteis, completas e confiáveis. Evite conteúdo superficial ou duplicado.
+
+Call to Action (CTA): Encerre com um convite à ação (ex: comentar, compartilhar, comprar, assinar).
+
+Meta Descrição (até 160 caracteres): Resumo atrativo do artigo contendo a palavra-chave.
+
+3. Público-alvo: - Ok
+[Defina o público-alvo: ex. iniciantes, profissionais, curiosos, etc.]
+
+4. Tom de Voz: - OK
+[Ex: informal, técnico, didático, inspirador, profissional...]
+
+5. Palavras-chave secundárias (opcional): - OK
+[Liste palavras-chave relacionadas ao tema]
+
+✅ Exemplo de Uso:
+Tema Principal: "Alimentos que ajudam na imunidade"
+Público-alvo: Adultos interessados em saúde e nutrição
+Tom de voz: Didático e amigável
+Palavras-chave secundárias: vitamina C, alimentação saudável, sistema imunológico
+
+Deseja que eu gere um exemplo de artigo com base nesse prompt? 
+*/

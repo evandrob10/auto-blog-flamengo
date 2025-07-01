@@ -64,7 +64,6 @@ model postCollect {
   dateTime      String?
   linkExtractID Int          @unique
   linksExtract  linksExtract @relation(fields: [linkExtractID], references: [linkID], onDelete: Cascade, onUpdate: Cascade)
-  postFinally   postFinally?
 }
 
 model postFinally {
@@ -77,7 +76,4 @@ model postFinally {
 
   authorID Int
   author   User @relation(fields: [authorID], references: [userID], onDelete: Cascade, onUpdate: Cascade)
-
-  postCollectID Int         @unique
-  postCollect   postCollect @relation(fields: [postCollectID], references: [postCollectID], onDelete: Cascade, onUpdate: Cascade)
 }

@@ -21,7 +21,7 @@ export default async function PainelLayout({
     <>
       { connect && <Connect /> }
       <Navigation />
-      <main className="h-[92vh] flex justify-center p-4">
+      <main className="h-[92vh] flex justify-center p-4 relative">
         {children}
       </main>
     </>

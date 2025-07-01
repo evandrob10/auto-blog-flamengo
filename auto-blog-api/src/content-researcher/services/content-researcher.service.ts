@@ -1,15 +1,11 @@
 import { Injectable } from '@nestjs/common';
 //Services
-import { WritersService } from 'src/writers/writers.service';
 import { ConfigPage } from './config-page/config-page.service';
 import { PrismaClientService } from 'src/prisma-client/prisma-client.service';
 
 @Injectable()
 export class ContentResearcherService extends ConfigPage {
-  constructor(
-    protected readonly prisma: PrismaClientService,
-    protected readonly WritersService: WritersService,
-  ) {
+  constructor(protected readonly prisma: PrismaClientService) {
     super();
   }
 
@@ -34,6 +30,7 @@ export class ContentResearcherService extends ConfigPage {
           select: {
             title: true,
             content: true,
+            dateTime: true,
           },
         },
       },

@@ -12,17 +12,21 @@ import { addWebSite } from "@/api/web";
 import { verifyToken } from "@/api/Auth";
 
 export default function ListUrl({ setWebSite }: listUrlType) {
+
+    //Abrir poup
+    const [openPopUp, setOpenPopUp] = useState<boolean>(false);
+
     const [openInputUrl, setOpenInputUrl] = useState<boolean>(false);
     const [allUrl, setAllUrl] = useState<urlType[]>();
     const [url, setUrl] = useState<string>();
     const [webSiteClick, setWebSiteClick] = useState<number | undefined>()
-
+    //Pega novas urls:
     const getAllUrls = useCallback(async () => {
         const user = await verifyToken();
         const allListUrl: urlType[] = user.userID ? await getAllUrl(user.userID) : [];
         if (allListUrl) setAllUrl(allListUrl);
     }, [])
-
+    //Incluir nova url:
     const addUrl = async () => {
         const user = await verifyToken();
         if (url) {
@@ -32,18 +36,22 @@ export default function ListUrl({ setWebSite }: listUrlType) {
         setUrl('');
         setOpenInputUrl(false);
     }
-
+    //Limpa webSite toda vez que poup fecha
+    useEffect(() => { if (!openPopUp) setWebSiteClick(undefined) }, [openPopUp])
+    //Atualiza a cada renderização do websiteClick
     useEffect(() => {
         getAllUrls();
     }, [getAllUrls, webSiteClick])
-
+    //Abre a pagina de importação
     async function openImports(element: urlType) {
         setWebSite(element);
     }
 
-    if (webSiteClick) return <Config webSiteClick={webSiteClick} setWebSiteClick={setWebSiteClick} />
     return (
         <section className="w-full flex flex-col items-center">
+            {webSiteClick &&
+                <Config webSiteClick={webSiteClick} setWebSiteClick={setWebSiteClick} openPopUp={openPopUp} setOpenPopUp={setOpenPopUp} />
+            }
             <table className="text-center text-[16px] w-full sm:w-[90%] lg:w-[80%] xl:w-[60%]">
                 <caption className="mb-3">
                     <div className="flex justify-between items-center">
@@ -52,7 +60,7 @@ export default function ListUrl({ setWebSite }: listUrlType) {
                     </div>
                     {openInputUrl &&
                         <div>
-                            <input onChange={event => setUrl(event.target.value)} className='my-1 py-1 px-2 border-1 w-[75%] mr-1 mb-3' type="text" value={url ? url : ''}/>
+                            <input onChange={event => setUrl(event.target.value)} className='my-1 py-1 px-2 border-1 w-[75%] mr-1 mb-3' type="text" value={url ? url : ''} />
                             <button type="button" className="text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer" onClick={addUrl}>ADICIONAR</button>
                         </div>
                     }
@@ -65,11 +73,11 @@ export default function ListUrl({ setWebSite }: listUrlType) {
                     </tr>
                 </thead>
                 <tbody className="text-[14px]">
-                    {allUrl && allUrl.map((element) => {
+                    {allUrl && allUrl.map((element, index) => {
                         return (
                             <tr key={element.websiteID} >
-                                <td >{element.websiteID}</td>
-                                <td >{element.urlwebsite.slice(0,35)}</td>
+                                <td >{index + 1}</td>
+                                <td >{element.urlwebsite.slice(0, 35)}</td>
                                 <td >
                                     <button className={`mr-2 text-[12px] bg-blue-500 text-[#FFF] py-1 px-2 rounded-3xl cursor-pointer`} onClick={() => openImports(element)}>Abrir</button>
                                 </td>
@@ -80,7 +88,11 @@ export default function ListUrl({ setWebSite }: listUrlType) {
                                         src={'/img/engrenagem.png'}
                                         alt="Configuração url"
                                         className="py-3 cursor-pointer"
-                                        onClick={() => setWebSiteClick(element.websiteID)}
+                                        onClick={() => {
+                                            setOpenPopUp(true);
+                                            setWebSiteClick(element.websiteID)
+                                        }
+                                        }
                                     />
                                 </td>
                             </tr>

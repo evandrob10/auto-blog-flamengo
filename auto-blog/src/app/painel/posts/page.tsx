@@ -1,11 +1,15 @@
 'use client';
 import Image from "next/image";
 import { Post } from "@/api/posts/interface";
-import { generationPosts, posts as ListPost } from "@/api/posts"
+import { posts as ListPost } from "@/api/posts"
 import { useCallback, useEffect, useState } from "react";
 import { verifyToken } from "@/api/Auth";
+import { CreatePost } from "./CreatePost";
 
 export default function Posts() {
+
+    //Abrir config
+    const [openPopUp, setOpenPopUp] = useState<boolean>(false);
 
     const [message, setMessage] = useState<string>();
     const [listPosts, setLisPosts] = useState<Post[]>();
@@ -17,25 +21,15 @@ export default function Posts() {
         else setMessage('Error ao atualizar os posts!');
     }, [])
 
-    const createPost = async () => {
-        setMessage('');
-        const user = await verifyToken();
-        const { quantity } = user.userID && await generationPosts(user.userID);
-        if (quantity) {
-            await updateListPost();
-            setMessage(`Foram adicionado ${quantity} com sucesso!.`);
-        }
-        else setMessage('Error ao criar os posts');
-    }
-
     useEffect(() => {
         updateListPost()
     }, [updateListPost])
 
     return (
         <section className="w-full bg-[#FFFFFF] xl:w-[1280px]">
+            <CreatePost openPopUp={openPopUp} setOpenPopUp={setOpenPopUp} />
             <section className="flex items-center justify-between relative mb-2 md:px-2 lg:px-4">
-                <button onClick={createPost} className="text-[18px] mb-2 mr-2 border-none bg-blue-600 w-[50px] h-[25px] rounded-full text-[#FFF] cursor-pointer">+</button>
+                <button  className="text-[18px] mb-2 mr-2 border-none bg-blue-600 w-[50px] h-[25px] rounded-full text-[#FFF] cursor-pointer" onClick={() => { setOpenPopUp(true) }}>+</button>
                 <h1 className="py-2">POSTAGENS</h1>
                 <div>
                     <Image
@@ -56,7 +50,7 @@ export default function Posts() {
                         {listPosts.map((element) => (
                             <div key={element.postFinallyID} className="border-1 border-[#cecbcbd1] rounded-[.3em] mb-2 sm:max-w-[48%] sm:mb-5 mx-[1%] p-2" >
                                 <div className="float-right">
-                                    <Image 
+                                    <Image
                                         width={25}
                                         height={25}
                                         src={'/icons/edit.svg'}
@@ -64,7 +58,7 @@ export default function Posts() {
                                         className="cursor-pointer hover:scale-120 mr-1"
                                     />
                                 </div>
-                                <Image 
+                                <Image
                                     width={1280}
                                     height={720}
                                     src={'/posts/tailwindcss-1633184775.jpg'}

@@ -29,3 +29,7 @@ body {
   position: absolute;
   bottom: 10%;
 }
+
+.poup-config{
+  transform: translate(-50%, -50%);
+}
